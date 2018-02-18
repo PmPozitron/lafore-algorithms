@@ -1,22 +1,33 @@
 package chapter3;
 
-import java.util.Random;
-
 public class InsertSortApp {
     public static void main(String[] args) {
 
-        int maxSize = 20;            // array size
+        int maxSize = 10;            // array size
         ArrayIns arr;                 // reference to array
         arr = new ArrayIns(maxSize);  // create the array
 
-        for (int i = 0; i < maxSize; i++) {
-            long value = new Random().nextLong();
+//        for (int i = 0; i < maxSize; i++) {
+//            long value = new Random().nextLong();
 //                long value = Long.MAX_VALUE - i;
 //                long value = i;
-            arr.insert(value);
-        }
+//            arr.insert(value);
+//        }
 
-        arr.insertionSort();
+        arr.insert(1L);
+        arr.insert(9L);
+        arr.insert(5L);
+        arr.insert(1L);
+        arr.insert(8L);
+        arr.insert(4L);
+        arr.insert(3L);
+        arr.insert(8L);
+        arr.insert(7L);
+        arr.insert(1L);
+
+//        arr.insertionSort();
+//        arr.killDuplicates();
+        arr.killDuplicatesViaInsertionSort();
         arr.display();
 
     }  // end main()
@@ -51,17 +62,17 @@ class ArrayIns {
     public void insertionSort() {
         long start = System.nanoTime();
         int in, out;
-        int shiftsCounter = 0;
-        int comparisonsCounter = 0;
+//        int shiftsCounter = 0;
+//        int comparisonsCounter = 0;
 
         for (out = 1; out < nElems; out++) {     // out is dividing line
             long temp = a[out];            // remove marked item
             in = out;                      // start shifts at out
             while (in > 0) {
-                comparisonsCounter++;
+//                comparisonsCounter++;
                 if (a[in - 1] >= temp) {    // until one is smaller
                     a[in] = a[in - 1];            // shift item to right
-                    shiftsCounter++;
+//                    shiftsCounter++;
 
                 } else {
                     break;
@@ -71,10 +82,11 @@ class ArrayIns {
             a[in] = temp;                  // insert marked item
         }  // end for
         long end = System.nanoTime();
-        System.out.printf("Insertion sort took %d, shiftsCounter %d, comparisonsCounter %d\n",(end - start), shiftsCounter, comparisonsCounter);
+        System.out.printf("Insertion sort took %d\n", (end - start));
     }  //
 
     public void killDuplicates() {
+        long start = System.nanoTime();
         int dupsCounter = 0;
         for (int i = 0; i < nElems; i++) {
             if (a[i] != a[i + 1] && a[i + 1] != -1) {
@@ -92,11 +104,38 @@ class ArrayIns {
             a[j] = -1;
             dupsCounter++;
             if (j == nElems - 1) {
-                System.out.println(dupsCounter);
                 nElems -= dupsCounter;
                 return;
             }
         }
+        long end = System.nanoTime();
+        System.out.printf("killDuplicates took %d\n", (end - start));
+    }
+
+    public void killDuplicatesViaInsertionSort() {
+        long start = System.nanoTime();
+        int in, out;
+
+        for (out = 1; out < nElems; out++) {     // out is dividing line
+            long temp = a[out];            // remove marked item
+            in = out;                      // start shifts at out
+            while (in > 0) {
+                if (a[in - 1] > temp) {    // until one is smaller
+                    a[in] = a[in - 1];            // shift item to right
+
+                } else if (a[in - 1] == temp) {
+                    a[in] = temp;
+                    temp = -1;
+
+                } else {
+                    break;
+                }
+                --in;                       // go left one position
+            }
+            a[in] = temp;                  // insert marked item
+        }  // end for
+        long end = System.nanoTime();
+        System.out.printf("killDuplicatesViaInsertionSort took %d\n", (end - start));
     }
 //--------------------------------------------------------------
 }  // end class ArrayIns
