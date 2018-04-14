@@ -7,18 +7,7 @@ import java.util.List;
 public class Exercises {
     public static void main(String[] args) {
         Exercises exercises = new Exercises();
-        ArrayList<Character> result = new ArrayList<Character>();
-        int initialLength = 16;
-        exercises.makeBranches_62(initialLength, initialLength, result);
-
-        for (int i = 1; i <= result.size(); i++) {
-            System.out.print(result.get(i-1));
-            if (i % initialLength == 0) {
-                System.out.println();
-            }
-
-        }
-
+        exercises.knapsack_64(new int[]{1,3,5}, 0, 8, new int[3], 0);
     }
 
     private long recursiveMultiplication_61(int x, int y) {
@@ -95,5 +84,40 @@ public class Exercises {
             return;
         }
         makeBranches_62(initialLength, currentLength/2, result);
+    }
+
+    private void displayBranches() {
+        ArrayList<Character> result = new ArrayList<Character>();
+        int initialLength = 16;
+        makeBranches_62(initialLength, initialLength, result);
+
+        for (int i = 1; i <= result.size(); i++) {
+            System.out.print(result.get(i-1));
+            if (i % initialLength == 0) {
+                System.out.println();
+            }
+        }
+    }
+
+    private int[] knapsack_64(int[]items, int index, int capacity, int[]placedItems, int placedCapacity) {
+        for (int i = index; i < items.length; i++) {
+            placedItems[i] = items[i];
+            placedCapacity += items[i];
+            System.out.printf("placed items are %s, their capacity is %d, index is %d, i is %s\n", Arrays.toString(placedItems), placedCapacity, index, i);
+
+            if (placedCapacity == capacity) {
+                System.out.println(Arrays.toString(placedItems));
+                return placedItems;
+
+            } else if (placedCapacity < capacity) {
+                knapsack_64(items, ++i, capacity, placedItems, placedCapacity);
+
+            } else if (placedCapacity > capacity) {
+                knapsack_64(items, ++index, capacity, new int[items.length], 0);
+            }
+        }
+
+        System.out.println("not found");
+        return null;
     }
 }
