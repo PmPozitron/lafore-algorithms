@@ -7,7 +7,7 @@ import java.util.List;
 public class Exercises {
     public static void main(String[] args) {
         Exercises exercises = new Exercises();
-        exercises.knapsack_64(new int[]{1,3,5}, 0, 8, new int[3], 0);
+        exercises.knapsack_64(new int[]{1,3,5}, 0, 0, 3, new int[3], 0);
     }
 
     private long recursiveMultiplication_61(int x, int y) {
@@ -99,21 +99,21 @@ public class Exercises {
         }
     }
 
-    private int[] knapsack_64(int[]items, int index, int capacity, int[]placedItems, int placedCapacity) {
-        for (int i = index; i < items.length; i++) {
+    private int[] knapsack_64(int[]items, int innerIndex, int outerIndex, int capacity, int[]placedItems, int placedCapacity) {
+        for (int i = innerIndex; i < items.length; i++) {
             placedItems[i] = items[i];
             placedCapacity += items[i];
-            System.out.printf("placed items are %s, their capacity is %d, index is %d, i is %s\n", Arrays.toString(placedItems), placedCapacity, index, i);
+            System.out.printf("placed items are %s, their capacity is %d, innerIndex is %d, outerIndex is %d, i is %s\n", Arrays.toString(placedItems), placedCapacity, innerIndex, outerIndex, i);
 
             if (placedCapacity == capacity) {
-                System.out.println(Arrays.toString(placedItems));
+                System.out.println("found " + Arrays.toString(placedItems));
                 return placedItems;
 
             } else if (placedCapacity < capacity) {
-                knapsack_64(items, ++i, capacity, placedItems, placedCapacity);
+                knapsack_64(items, ++innerIndex, outerIndex, capacity, placedItems, placedCapacity);
 
             } else if (placedCapacity > capacity) {
-                knapsack_64(items, ++index, capacity, new int[items.length], 0);
+                knapsack_64(items, ++outerIndex, outerIndex, capacity, new int[items.length], 0);
             }
         }
 
