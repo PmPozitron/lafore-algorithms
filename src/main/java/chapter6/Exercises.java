@@ -7,7 +7,11 @@ import java.util.List;
 public class Exercises {
     public static void main(String[] args) {
         Exercises exercises = new Exercises();
-        exercises.knapsack_64(new int[]{1,3,5}, 0, 0, 3, new int[3], 0);
+        int[]items = new int[]{11, 8, 7, 6, 5};
+//        int[]items = new int[]{1,3,5};
+        int capacity = 13;
+//        exercises.knapsack_64(items, 0, 0, capacity, new int[items.length], 0);
+        exercises.knapsack_64_2(items, 0, capacity, new int[items.length]);
     }
 
     private long recursiveMultiplication_61(int x, int y) {
@@ -119,5 +123,21 @@ public class Exercises {
 
         System.out.println("not found");
         return null;
+    }
+
+    private void knapsack_64_2(int[]items, int index, int capacity, int[]placed) {
+        for (int i = index; i < items.length; i++) {
+            placed[i] = items[i];
+            if (items[i] == capacity) {
+                System.out.println(items[i]);
+
+            } else if (items[i] < capacity) {
+                knapsack_64_2(items, i+1, capacity-items[i], placed);
+
+            } else if (items[i] > capacity) {
+                placed[i] = 0;
+                knapsack_64_2(items, i+1, capacity, placed);
+            }
+        }
     }
 }
