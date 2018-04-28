@@ -1,15 +1,17 @@
 package chapter7;
 
-// quickSort3.java
-// demonstrates quick sort; uses insertion sort for cleanup
-// to run this program: C>java QuickSort3App
+// quickSort2.java
+// demonstrates quick sort with median-of-three partitioning
+// to run this program: C>java QuickSort2App
 ////////////////////////////////////////////////////////////////
-class ArrayIns
+class ArrayIns2
 {
-    protected long[] theArray;          // ref to array theArray
-    protected int nElems;               // number of data items
+    private long[] theArray;          // ref to array theArray
+    private int nElems;               // number of data items
+    private int swapsCounter;
+    private int comparisonsCounter;
     //--------------------------------------------------------------
-    public ArrayIns(int max)          // constructor
+    public ArrayIns2(int max)          // constructor
     {
         theArray = new long[max];      // create the array
         nElems = 0;                    // no items yet
@@ -26,22 +28,20 @@ class ArrayIns
         System.out.print("A=");
         for(int j=0; j<nElems; j++)    // for each element,
             System.out.print(theArray[j] + " ");  // display it
-        System.out.println("");
+        System.out.println("swaps " + swapsCounter + ", comparisons " + comparisonsCounter);
     }
     //--------------------------------------------------------------
-    public void quickSort() {
-        long start = System.nanoTime();
+    public void quickSort()
+    {
         recQuickSort(0, nElems-1);
-        // insertionSort(0, nElems-1); // the other option
-        System.out.println(System.nanoTime() - start);
     }
     //--------------------------------------------------------------
     public void recQuickSort(int left, int right)
     {
         int size = right-left+1;
-        if(size < 10)                   // insertion sort if small
-            insertionSort(left, right);
-        else                            // quicksort if large
+        if(size <= 3)                  // manual sort if small
+            manualSort(left, right);
+        else                           // quicksort if large
         {
             long median = medianOf3(left, right);
             int partition = partitionIt(left, right, median);
@@ -63,8 +63,10 @@ class ArrayIns
         if( theArray[center] > theArray[right] )
             swap(center, right);
 
-        swap(center, right-1);           // put pivot on right
-        return theArray[right-1];        // return median value
+        swap(center, right-1);             // put pivot on right
+        comparisonsCounter += 3;
+
+        return theArray[right-1];          // return median value
     }  // end medianOf3()
     //--------------------------------------------------------------
     public void swap(int dex1, int dex2)  // swap two elements
@@ -72,18 +74,22 @@ class ArrayIns
         long temp = theArray[dex1];        // A into temp
         theArray[dex1] = theArray[dex2];   // B into A
         theArray[dex2] = temp;             // temp into B
+        swapsCounter++;
     }  // end swap(
     //--------------------------------------------------------------
     public int partitionIt(int left, int right, long pivot)
     {
         int leftPtr = left;             // right of first elem
         int rightPtr = right - 1;       // left of pivot
+
         while(true)
         {
             while( theArray[++leftPtr] < pivot )  // find bigger
-                ;                                  // (nop)
+                comparisonsCounter++;                                  //    (nop)
+            comparisonsCounter++;
             while( theArray[--rightPtr] > pivot ) // find smaller
-                ;                                  // (nop)
+                comparisonsCounter++;                                  //    (nop)
+            comparisonsCounter++;
             if(leftPtr >= rightPtr)      // if pointers cross,
                 break;                    //    partition done
             else                         // not crossed, so
@@ -93,42 +99,54 @@ class ArrayIns
         return leftPtr;                 // return pivot location
     }  // end partitionIt()
     //--------------------------------------------------------------
-    // insertion sort
-    public void insertionSort(int left, int right)
+    public void manualSort(int left, int right)
     {
-        int in, out;
-        //  sorted on left of out
-        for(out=left+1; out<=right; out++)
-        {
-            long temp = theArray[out];    // remove marked item
-            in = out;                     // start shifts at out
-            // until one is smaller,
-            while(in>left && theArray[in-1] >= temp)
-            {
-                theArray[in] = theArray[in-1]; // shift item to right
-                --in;                      // go left one position
+        int size = right-left+1;
+        if(size <= 1)
+            return;         // no sort necessary
+        if(size == 2)
+        {               // 2-sort left and right
+            if( theArray[left] > theArray[right] ) {
+                swap(left, right);
             }
-            theArray[in] = temp;          // insert marked item
-        }  // end for
-    }  // end insertionSort()
-//--------------------------------------------------------------
-}  // end class ArrayIns
-////////////////////////////////////////////////////////////////
-public class QuickSort3App {
+            comparisonsCounter++;
 
-    public static void main(String[] args) {
-        int maxSize = 10000000;             // array size
-        ArrayIns arr;                 // reference to array
-        arr = new ArrayIns(maxSize);  // create the array
+            return;
+        }
+        else               // size is 3
+        {               // 3-sort left, center, & right
+            if( theArray[left] > theArray[right-1] ) {
+                swap(left, right - 1);                // left, center
+            }
+            if( theArray[left] > theArray[right] ) {
+                swap(left, right);                  // left, right
+            }
+            if( theArray[right-1] > theArray[right] ) {
+                swap(right - 1, right);               // center, right
+            }
+            comparisonsCounter += 3;
+        }
+    }  // end manualSort()
+//--------------------------------------------------------------
+}  // end class ArrayIns2
+////////////////////////////////////////////////////////////////
+public class QuickSort2App
+{
+    public static void main(String[] args)
+    {
+        int maxSize = 12;             // array size
+        ArrayIns2 arr;                 // reference to array
+        arr = new ArrayIns2(maxSize);  // create the array
 
         for(int j=0; j<maxSize; j++)  // fill array with
         {                          // random numbers
-            long n = (int)(java.lang.Math.random()*99);
+//            long n = (int)(java.lang.Math.random()*99);
+            long n = Long.MAX_VALUE - j;
             arr.insert(n);
         }
-//        arr.display();                // display items
+        arr.display();                // display items
         arr.quickSort();              // quicksort them
-//        arr.display();                // display them again
+        arr.display();                // display them again
     }  // end main()
-}  // end class QuickSort3App
+}  // end class QuickSort2App
 ////////////////////////////////////////////////////////////////
