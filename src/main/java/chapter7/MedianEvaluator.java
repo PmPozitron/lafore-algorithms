@@ -10,7 +10,7 @@ public class MedianEvaluator {
     int[] values;
 
     public MedianEvaluator() {
-        values = predefinedValues();
+        values = randomValues(60);
         Arrays.toString(values);
     }
 
@@ -69,7 +69,7 @@ public class MedianEvaluator {
         temp = values[dex1];             // A into temp
         values[dex1] = values[dex2];   // B into A
         values[dex2] = temp;             // temp into B
-        System.out.printf("after swap %d and %d: %s\n", dex1, dex2, Arrays.toString(values));
+//        System.out.printf("after swap %d and %d: %s\n", dex1, dex2, Arrays.toString(values));
 
     }  // end swap()
 
@@ -138,23 +138,44 @@ public class MedianEvaluator {
                 return quickSelect(left, partition-1, seekIndex);
             }
         }
+    }
 
+    public int quickSelect2(int left, int right, int seekIndex) {
+
+        if (right - left <= 0) {
+            return values[seekIndex];
+        }
+
+        int partition = partitionIt3(left, right);
+
+        if (seekIndex == partition) {
+            return values[partition];
+
+        } else if (seekIndex > partition) {
+            return quickSelect2(partition+1, right, seekIndex);
+
+        } else {
+            return quickSelect2(left, partition-1, seekIndex);
+        }
     }
 
     public static void main(String[] args) {
-
-        MedianEvaluator evaluator = new MedianEvaluator();
-        System.out.println(Arrays.toString(evaluator.getValues()));
-        int found = evaluator.quickSelect(0, evaluator.getValues().length-1, 5);
+        int indexToFind = 4;
+        for (int i = 0; i < 1000; i++) {
+            MedianEvaluator evaluator = new MedianEvaluator();
+//        System.out.println(Arrays.toString(evaluator.getValues()));
+            int found = evaluator.quickSelect2(0, evaluator.getValues().length-1, indexToFind);
 //        int found = evaluator.findIndex(0, evaluator.getValues().length-1, 5);
-        Arrays.sort(evaluator.getValues());
-        System.out.println(Arrays.toString(evaluator.getValues()));
-        System.out.printf("found %d, expected %d\n", found, evaluator.getValues()[5]);
+            Arrays.sort(evaluator.getValues());
+//        System.out.println(Arrays.toString(evaluator.getValues()));
+            System.out.printf("found %d, expected %d, %b\n", found, evaluator.getValues()[indexToFind], found == evaluator.getValues()[indexToFind]);
+        }
+
     }
 
     public static int[] predefinedValues() {
 //        int[]result = new int[]{-157115963, 328908444, -1198962236, 663883518, -1932380074, 327466500, 321705107, -1700051241, 1725348878, 843313522};
-        int[]result = new int[]{32, 26, 2, 30, 12, 22};
+        int[]result = new int[]{13, 2, 10, 44, 26, 13};
 
         return result;
     }
