@@ -35,7 +35,7 @@ public class LetterTree {
     private void parseString(String aString) {
         LinkedList<Node> nodes = new LinkedList<Node>();
         for (char letter : aString.toCharArray()) {
-            nodes.push(new Node(letter, null, null));
+            nodes.addLast(new Node(letter, null, null));
         }
         LinkedList<Node> compoundNodes = new LinkedList<Node>();
 
@@ -44,7 +44,7 @@ public class LetterTree {
             if (! nodes.isEmpty()) {
                 compound.setRight(nodes.poll());
             }
-            compoundNodes.push(compound);
+            compoundNodes.addLast(compound);
         }
 
         while(compoundNodes.size() > 1) {
