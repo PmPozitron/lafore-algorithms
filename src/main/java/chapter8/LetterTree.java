@@ -6,8 +6,17 @@ import java.util.List;
 import java.util.Stack;
 
 public class LetterTree {
+    private enum TRAVERSE_MODE {
+        PREFIX, INFIX, POSTFIX
+    }
+
     public static void main(String[] args) {
-        new LetterTree().parseArithmetic_84("AB+CD+*");
+        LetterTree testDrive = new LetterTree();
+        Tree tree = testDrive.parseArithmetic_84("AB+CD+*");
+
+        for (TRAVERSE_MODE mode : TRAVERSE_MODE.values()) {
+            tree.traverse(tree.getRoot(), mode);
+        }
 
     }
 
@@ -77,7 +86,7 @@ public class LetterTree {
         tree.displayTree();
     }
 
-    private void parseArithmetic_84(String expression) {
+    private Tree parseArithmetic_84(String expression) {
         List<Character> operators = Arrays.asList('+','-','*','/');
         LinkedList<Node> stack = new LinkedList<Node>();
 
@@ -92,6 +101,7 @@ public class LetterTree {
 
         Tree tree = new Tree(stack.poll());
         tree.displayTree();
+        return tree;
     }
 
     static class Tree {
@@ -118,6 +128,45 @@ public class LetterTree {
                 traverse(current.getLeft());
                 System.out.println(current.getValue());
                 traverse(current.getRight());
+            }
+        }
+
+        public void traverse(Node current, TRAVERSE_MODE mode) {
+            if (TRAVERSE_MODE.PREFIX == mode) {
+                prefixTraverse(current);
+
+            } else if (TRAVERSE_MODE.INFIX == mode) {
+                infixTraverse(current);
+
+            } else if (TRAVERSE_MODE.POSTFIX == mode) {
+                postfixTraverse(current);
+            }
+            System.out.println();
+        }
+
+        public void prefixTraverse(Node current) {
+            if (current != null) {
+                System.out.print(current.getValue());
+                prefixTraverse(current.getLeft());
+                prefixTraverse(current.getRight());
+            }
+        }
+
+        public void infixTraverse(Node current) {
+            if (current != null) {
+                System.out.print('(');
+                infixTraverse(current.getLeft());
+                System.out.print(current.getValue());
+                infixTraverse(current.getRight());
+                System.out.print(')');
+            }
+        }
+
+        public void postfixTraverse(Node current) {
+            if (current != null) {
+                postfixTraverse(current.getLeft());
+                postfixTraverse(current.getRight());
+                System.out.print(current.getValue());
             }
         }
 
