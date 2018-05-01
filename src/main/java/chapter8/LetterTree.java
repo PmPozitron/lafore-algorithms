@@ -2,11 +2,12 @@ package chapter8;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Stack;
 
 public class LetterTree {
     public static void main(String[] args) {
-        new LetterTree().createTreeFromString_83("abcdefghijklmno");
+        new LetterTree().parseArithmetic_84("AB+CD+*");
 
     }
 
@@ -73,6 +74,23 @@ public class LetterTree {
         }
 
         Tree tree = new Tree(nodes[0]);
+        tree.displayTree();
+    }
+
+    private void parseArithmetic_84(String expression) {
+        List<Character> operators = Arrays.asList('+','-','*','/');
+        LinkedList<Node> stack = new LinkedList<Node>();
+
+        for (int i = 0; i < expression.length(); i++){
+            if (! operators.contains(expression.charAt(i))) {
+                stack.push(new Node(expression.charAt(i), null, null));
+
+            } else {
+                stack.push(new Node(expression.charAt(i), stack.poll(), stack.poll()));
+            }
+        }
+
+        Tree tree = new Tree(stack.poll());
         tree.displayTree();
     }
 
