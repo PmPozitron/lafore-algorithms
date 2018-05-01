@@ -6,7 +6,7 @@ import java.util.Stack;
 
 public class LetterTree {
     public static void main(String[] args) {
-        new LetterTree().parseString("abcdefgh");
+        new LetterTree().createTreeFromString_83("abcdefghijklmno");
 
     }
 
@@ -32,7 +32,7 @@ public class LetterTree {
 
     }
 
-    private void parseString(String aString) {
+    private void createTreeFromString_82(String aString) {
         LinkedList<Node> nodes = new LinkedList<Node>();
         for (char letter : aString.toCharArray()) {
             nodes.addLast(new Node(letter, null, null));
@@ -54,6 +54,25 @@ public class LetterTree {
 
         System.out.println(compoundNodes.size());
         Tree tree = new Tree(compoundNodes.poll());
+        tree.displayTree();
+    }
+
+    private void createTreeFromString_83(String aString) {
+        Node[] nodes = new Node[aString.length()];
+        for (int i = 0; i < aString.length(); i++) {
+            nodes[i] = new Node(aString.charAt(i), null, null);
+        }
+
+        for (int i=0,j=1; i<nodes.length; i++) {
+            if (j < nodes.length) {
+                nodes[i].setLeft(nodes[j++]);
+            }
+            if (j < nodes.length) {
+                nodes[i].setRight(nodes[j++]);
+            }
+        }
+
+        Tree tree = new Tree(nodes[0]);
         tree.displayTree();
     }
 
