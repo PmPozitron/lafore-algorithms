@@ -2,10 +2,11 @@ package chapter8;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Stack;
 
 public class LetterTree {
     public static void main(String[] args) {
-        new LetterTree().parseString();
+        new LetterTree().parseString("abcdefgh");
 
     }
 
@@ -31,8 +32,7 @@ public class LetterTree {
 
     }
 
-    private void parseString() {
-        String aString = "abcde";
+    private void parseString(String aString) {
         LinkedList<Node> nodes = new LinkedList<Node>();
         for (char letter : aString.toCharArray()) {
             nodes.push(new Node(letter, null, null));
@@ -47,15 +47,14 @@ public class LetterTree {
             compoundNodes.push(compound);
         }
 
-        LinkedList<Node> result = new LinkedList<Node>(compoundNodes);
-        while(result.size() > 1) {
-            Node aNewOne = new Node('+', result.poll(), result.poll());
-            result.push(aNewOne);
+        while(compoundNodes.size() > 1) {
+            Node aNewOne = new Node('+', compoundNodes.poll(), compoundNodes.poll());
+            compoundNodes.addLast(aNewOne);
         }
 
-        System.out.println(result.size());
-        Tree tree = new Tree(result.poll());
-        tree.display();
+        System.out.println(compoundNodes.size());
+        Tree tree = new Tree(compoundNodes.poll());
+        tree.displayTree();
     }
 
     static class Tree {
@@ -113,6 +112,52 @@ public class LetterTree {
                 }
             }
         }
+
+        public void displayTree() {
+            Stack globalStack = new Stack();
+            globalStack.push(root);
+            int nBlanks = 32;
+            boolean isRowEmpty = false;
+            System.out.println("......................................................");
+            while(! isRowEmpty) {
+                Stack localStack = new Stack();
+                isRowEmpty = true;
+
+                for(int j=0; j<nBlanks; j++) {
+                    System.out.print(' ');
+                }
+
+                while(! globalStack.isEmpty()) {
+                    Node temp = (Node)globalStack.pop();
+
+                    if(temp != null) {
+                        System.out.print(temp.getValue());
+                        localStack.push(temp.getLeft());
+                        localStack.push(temp.getRight());
+
+                        if(temp.getLeft() != null || temp.getRight() != null) {
+                            isRowEmpty = false;
+                        }
+
+                    } else {
+                        System.out.print("--");
+                        localStack.push(null);
+                        localStack.push(null);
+
+                    } for(int j=0; j<nBlanks*2-2; j++) {
+                        System.out.print(' ');
+                    }
+                }  // end while globalStack not empty
+
+                System.out.println();
+                nBlanks /= 2;
+
+                while(localStack.isEmpty()==false) {
+                    globalStack.push(localStack.pop());
+                }
+            }  // end while isRowEmpty is false
+            System.out.println("......................................................");
+        }  // end displayTree()
     }
 
     static class Node {
