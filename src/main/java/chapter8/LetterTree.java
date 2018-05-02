@@ -1,8 +1,13 @@
 package chapter8;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Stack;
 
 public class LetterTree {
@@ -10,14 +15,28 @@ public class LetterTree {
         PREFIX, INFIX, POSTFIX
     }
 
+    private final static String TASK_STRING =
+            "Accept a text message, possibly of more than one line.\n" +
+            "Create a Huffman tree for this message.\n" +
+            "Create a code table.\n" +
+            "Encode the message into binary.\n" +
+            "Decode the message from binary back to text.";
+
     public static void main(String[] args) {
-        LetterTree testDrive = new LetterTree();
-        Tree tree = testDrive.parseArithmetic_84("AB+CD+*");
+        String theString = "SUSIE SAYS IT IS EASY\n";
+//        String theString = "SUSIE SAYS\n";
+        LetterTree driver = new LetterTree();
+        driver.huffmanProcessor_85(TASK_STRING);
+
+
+    }
+
+    private void parsingTestDrive() {
+        Tree tree = parseArithmetic_84("AB+CD+*");
 
         for (TRAVERSE_MODE mode : TRAVERSE_MODE.values()) {
             tree.traverse(tree.getRoot(), mode);
         }
-
     }
 
     private void testDrive() {
@@ -49,15 +68,15 @@ public class LetterTree {
         }
         LinkedList<Node> compoundNodes = new LinkedList<Node>();
 
-        while (! nodes.isEmpty()) {
+        while (!nodes.isEmpty()) {
             Node compound = new Node('+', nodes.poll(), null);
-            if (! nodes.isEmpty()) {
+            if (!nodes.isEmpty()) {
                 compound.setRight(nodes.poll());
             }
             compoundNodes.addLast(compound);
         }
 
-        while(compoundNodes.size() > 1) {
+        while (compoundNodes.size() > 1) {
             Node aNewOne = new Node('+', compoundNodes.poll(), compoundNodes.poll());
             compoundNodes.addLast(aNewOne);
         }
@@ -73,7 +92,7 @@ public class LetterTree {
             nodes[i] = new Node(aString.charAt(i), null, null);
         }
 
-        for (int i=0,j=1; i<nodes.length; i++) {
+        for (int i = 0, j = 1; i < nodes.length; i++) {
             if (j < nodes.length) {
                 nodes[i].setLeft(nodes[j++]);
             }
@@ -87,11 +106,11 @@ public class LetterTree {
     }
 
     private Tree parseArithmetic_84(String expression) {
-        List<Character> operators = Arrays.asList('+','-','*','/');
+        List<Character> operators = Arrays.asList('+', '-', '*', '/');
         LinkedList<Node> stack = new LinkedList<Node>();
 
-        for (int i = 0; i < expression.length(); i++){
-            if (! operators.contains(expression.charAt(i))) {
+        for (int i = 0; i < expression.length(); i++) {
+            if (!operators.contains(expression.charAt(i))) {
                 stack.push(new Node(expression.charAt(i), null, null));
 
             } else {
@@ -103,6 +122,108 @@ public class LetterTree {
         tree.displayTree();
         return tree;
     }
+
+    private void huffmanProcessor_85(String aString) {
+        Tree tree = createHuffmanTree(aString);
+        Map<Character, String> encoding = createCodeTable(tree);
+        String[] encoded = encode(aString, encoding);
+        String decoded = decode(encoded, convertEncoding(encoding));
+        System.out.println(Arrays.toString(encoded));
+        System.out.println(decoded);
+
+    }
+
+    private Tree createHuffmanTree(String aString) {
+        LinkedHashMap<Character, Integer> charsWeights = new LinkedHashMap<Character, Integer>();
+        for (char letter : aString.toCharArray()) {
+            Integer currentLetterWeight = charsWeights.get(letter);
+            if (currentLetterWeight == null) {
+                charsWeights.put(letter, 1);
+
+            } else {
+                charsWeights.put(letter, currentLetterWeight + 1);
+            }
+        }
+
+        PriorityQueue<Node> forest = new PriorityQueue<Node>(charsWeights.size(), new Comparator<Node>() {
+            public int compare(Node o1, Node o2) {
+//              They are ordered by frequency, with the smallest frequency having the highest priority.
+//              That is, when you remove a tree, it’s always the one with the least-used character.
+                return o1.getWeight() - o2.getWeight();
+            }
+        });
+        for (Map.Entry<Character, Integer> entry : charsWeights.entrySet()) {
+            forest.add(new Node(entry.getKey(), entry.getValue(), null, null));
+        }
+
+        while (forest.size() > 1) {
+            Node current = forest.poll();
+            Node nextToCurrent = forest.poll();
+            forest.add(new Node('_', current.getWeight() + nextToCurrent.getWeight(), current, nextToCurrent));
+        }
+
+        return new Tree(forest.poll());
+    }
+
+    private Map<Character, String> createCodeTable(Tree aTree) {
+
+//        String[] encoding = new String['Z' - '\n'];
+        LinkedHashMap<Character, String> encoding = new LinkedHashMap<Character, String>();
+        huffmanCreator(aTree.getRoot(), encoding, new StringBuilder());
+        return encoding;
+    }
+
+    private String decode(String[] toBeEncoded, Map<String, Character> encoding) {
+        StringBuilder result = new StringBuilder();
+        for (String token : toBeEncoded) {
+            result.append(encoding.get(token));
+        }
+        return result.toString();
+    }
+
+    private String[] encode(String toBeDecoded, Map<Character, String> encoding) {
+        String[] result = new String[toBeDecoded.length()];
+        for (int i = 0; i < toBeDecoded.toCharArray().length; i++) {
+            result[i] = encoding.get(toBeDecoded.charAt(i));
+        }
+        return result;
+    }
+
+    private Map<String, Character> convertEncoding(Map<Character, String> encoding) {
+        Map<String, Character> result = new HashMap<String, Character>();
+        for (Map.Entry<Character, String> entry : encoding.entrySet()) {
+            result.put(entry.getValue(), entry.getKey());
+        }
+
+        return result;
+    }
+
+    public void huffmanCreator(Node current, Map<Character, String> result, StringBuilder token) {
+        Node next  = current.getLeft();
+        if (next != null) {
+            token.append('0');
+            huffmanCreator(next, result, token);
+        }
+
+        next = current.getRight();
+        if (next != null) {
+            token.append('1');
+            huffmanCreator(next, result, token);
+        }
+
+        if ('_' != current.getValue()) {
+            result.put(current.getValue(), token.toString());
+
+        }
+        if (token.length() > 0) {
+//            token.delete(token.length() - 1, token.length());
+            token.deleteCharAt(token.length()-1);
+        }
+
+        return;
+
+    }
+
 
     static class Tree {
         private Node root;
@@ -173,8 +294,8 @@ public class LetterTree {
         public void display() {
             LinkedList<Node> global = new LinkedList<Node>(Arrays.asList(getRoot()));
             boolean rowEmpty = false;
-            while (! rowEmpty) {
-                LinkedList<Node>local = new LinkedList<Node>();
+            while (!rowEmpty) {
+                LinkedList<Node> local = new LinkedList<Node>();
                 rowEmpty = true;
 
                 while (!global.isEmpty()) {
@@ -193,7 +314,7 @@ public class LetterTree {
                     }
                 }
                 System.out.println();
-                while (! local.isEmpty()) {
+                while (!local.isEmpty()) {
                     global.push(local.poll());
                 }
             }
@@ -205,23 +326,23 @@ public class LetterTree {
             int nBlanks = 32;
             boolean isRowEmpty = false;
             System.out.println("......................................................");
-            while(! isRowEmpty) {
+            while (!isRowEmpty) {
                 Stack localStack = new Stack();
                 isRowEmpty = true;
 
-                for(int j=0; j<nBlanks; j++) {
+                for (int j = 0; j < nBlanks; j++) {
                     System.out.print(' ');
                 }
 
-                while(! globalStack.isEmpty()) {
-                    Node temp = (Node)globalStack.pop();
+                while (!globalStack.isEmpty()) {
+                    Node temp = (Node) globalStack.pop();
 
-                    if(temp != null) {
-                        System.out.print(temp.getValue());
+                    if (temp != null) {
+                        System.out.print(new String(new char[]{temp.getValue()}) + temp.getWeight());
                         localStack.push(temp.getLeft());
                         localStack.push(temp.getRight());
 
-                        if(temp.getLeft() != null || temp.getRight() != null) {
+                        if (temp.getLeft() != null || temp.getRight() != null) {
                             isRowEmpty = false;
                         }
 
@@ -230,7 +351,8 @@ public class LetterTree {
                         localStack.push(null);
                         localStack.push(null);
 
-                    } for(int j=0; j<nBlanks*2-2; j++) {
+                    }
+                    for (int j = 0; j < nBlanks * 2 - 2; j++) {
                         System.out.print(' ');
                     }
                 }  // end while globalStack not empty
@@ -238,7 +360,7 @@ public class LetterTree {
                 System.out.println();
                 nBlanks /= 2;
 
-                while(localStack.isEmpty()==false) {
+                while (localStack.isEmpty() == false) {
                     globalStack.push(localStack.pop());
                 }
             }  // end while isRowEmpty is false
@@ -248,6 +370,7 @@ public class LetterTree {
 
     static class Node {
         private char value;
+        private int weight;
         private Node left;
         private Node right;
 
@@ -260,12 +383,25 @@ public class LetterTree {
             this.right = right;
         }
 
+        public Node(char value, int weight, Node left, Node right) {
+            this(value, left, right);
+            this.weight = weight;
+        }
+
         public char getValue() {
             return value;
         }
 
         public void setValue(char value) {
             this.value = value;
+        }
+
+        public int getWeight() {
+            return weight;
+        }
+
+        public void setWeight(int weight) {
+            this.weight = weight;
         }
 
         public Node getLeft() {
