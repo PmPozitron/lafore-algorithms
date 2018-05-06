@@ -7,6 +7,9 @@ package chapter10;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.LinkedList;
+
 ////////////////////////////////////////////////////////////////
 class DataItem
 {
@@ -250,6 +253,49 @@ class Tree234
         }
         return current.getItem(0);
     }
+
+    public void traverse(Node current) {
+        if (current == null) {
+            current  = root;
+        }
+
+        if (current.getChild(0) != null) {
+            traverse(current.getChild(0));
+        }
+
+        current.displayNode();
+        if (current.getChild(1) != null) {
+            traverse(current.getChild(1));
+        }
+        if (current.getChild(2) != null) {
+            traverse(current.getChild(2));
+        }
+        if (current.getChild(3) != null) {
+            traverse(current.getChild(3));
+        }
+    }
+
+    public void widthTraverse() {
+        LinkedList<Node> stack = new LinkedList<Node>(Arrays.asList(root));
+        while (! stack.isEmpty()) {
+            Node node = stack.poll();
+            for (int i = 0; i < 4; i++) {
+                if (node.getChild(i) != null) {
+                    stack.push(node.getChild(i));
+
+                } else {
+                    break;
+                }
+            }
+
+            for (int i = 0; i < 3; i++) {
+                if (node.getItem(i) != null) {
+                    node.getItem(i).displayItem();
+                }
+            }
+            System.out.println();
+        }
+    }
 // -------------------------------------------------------------\
 }  // end class Tree234
 ////////////////////////////////////////////////////////////////
@@ -265,10 +311,15 @@ public class Tree234App
         theTree.insert(60);
         theTree.insert(30);
         theTree.insert(70);
+        theTree.insert(75);
+        theTree.insert(76);
+        theTree.insert(45);
+        theTree.insert(35);
+        theTree.insert(15);
 
         while(switchedOn) {
             System.out.print("Enter first letter of ");
-            System.out.print("show, insert, find, minimum or quit: ");
+            System.out.print("show, insert, find, minimum, traverse or quit: ");
             char choice = getChar();
             switch(choice)
             {
@@ -295,6 +346,10 @@ public class Tree234App
                 case 'm' :
                     theTree.findMinimum(null).displayItem();
                     System.out.println();
+                    break;
+                case 't':
+//                    theTree.traverse(null);
+                    theTree.widthTraverse();
                     break;
                 default:
                     System.out.print("Invalid entry\n");
