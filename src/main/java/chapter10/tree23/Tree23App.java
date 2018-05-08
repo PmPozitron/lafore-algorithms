@@ -22,7 +22,7 @@ class DataItem
 ////////////////////////////////////////////////////////////////
 class Node
 {
-    private static final int ORDER = 4;
+    private static final int ORDER = 3;
     private int numItems;
     private Node parent;
     private Node childArray[] = new Node[ORDER];
@@ -138,8 +138,7 @@ class Tree23
     }
     // -------------------------------------------------------------
     // insert a DataItem
-    public void insert(long dValue)
-    {
+    public void insert(long dValue) {
         Node curNode = root;
         DataItem tempItem = new DataItem(dValue);
 
@@ -162,6 +161,82 @@ class Tree23
 
         curNode.insertItem(tempItem);       // insert new DataItem
     }  // end insert()
+
+    public void insert23(long value) {
+        Node current = root;
+
+        while (! current.isLeaf()) {
+            current = getNextChild(current, value);
+        }
+
+        DataItem newDataItem = new DataItem(value);
+        if (! current.isFull()) {
+            current.insertItem(newDataItem);
+
+        } else {
+            split23(current, newDataItem);
+
+        }
+    }
+
+    public void split23(Node toBeSplit, DataItem newItem) {
+        Node newParent = null;
+
+        if (root == toBeSplit) {
+            newParent = new Node();
+            root = newParent;
+
+        } else {
+            newParent = toBeSplit.getParent();
+        }
+
+        DataItem right = toBeSplit.removeItem();
+        DataItem left = toBeSplit.removeItem();
+        DataItem shifted = null;
+        DataItem[] toBeConnected = new DataItem[2];
+
+        if (newItem.dData < left.dData) {
+            newParent.insertItem(left);
+            shifted = left;
+            toBeConnected[0] = newItem;
+            toBeConnected[1] = right;
+
+        } else if (newItem.dData > right.dData) {
+            newParent.insertItem(right);
+            shifted = right;
+            toBeConnected[0] = left;
+            toBeConnected[1] = newItem;
+
+        } else {
+            newParent.insertItem(newItem);
+            shifted = newItem;
+            toBeConnected[0] = left;
+            toBeConnected[1] = right;
+        }
+
+        if (newParent.getChild(0) != null && newParent.getChild(0).getNumItems() > 0) {
+//            newParent.disconnectChild(0);
+            Node one = new Node();
+            one.insertItem(toBeConnected[0]);
+            Node two = new Node();
+            two.insertItem(toBeConnected[1]);
+            newParent.connectChild(1, one);
+            newParent.connectChild(2, two);
+
+        } else {
+            Node exSecond = newParent.getChild(1);
+            newParent.disconnectChild(1);
+            newParent.connectChild(2, exSecond);
+
+            Node one = new Node();
+            one.insertItem(toBeConnected[0]);
+            Node two = new Node();
+            two.insertItem(toBeConnected[1]);
+            newParent.connectChild(0, one);
+            newParent.connectChild(1, two);
+        }
+    }
+
     // -------------------------------------------------------------
     public void split(Node thisNode)     // split the node
     {
@@ -205,8 +280,7 @@ class Tree23
     }  // end split()
     // -------------------------------------------------------------
     // gets appropriate child of node during search for value
-    public Node getNextChild(Node theNode, long theValue)
-    {
+    public Node getNextChild(Node theNode, long theValue) {
         int j;
         // assumes node is not empty, not full, not a leaf
         int numItems = theNode.getNumItems();
@@ -218,14 +292,11 @@ class Tree23
         return theNode.getChild(j);        // return right child
     }
     // -------------------------------------------------------------
-    public void displayTree()
-    {
+    public void displayTree() {
         recDisplayTree(root, 0, 0);
     }
     // -------------------------------------------------------------
-    private void recDisplayTree(Node thisNode, int level,
-                                int childNumber)
-    {
+    private void recDisplayTree(Node thisNode, int level, int childNumber) {
         System.out.print("level="+level+" child="+childNumber+" ");
         thisNode.displayNode();               // display this node
 
@@ -251,18 +322,22 @@ public class Tree23App
         long value;
         Tree23 theTree = new Tree23();
 
-//        theTree.insert(50);
-//        theTree.insert(40);
-//        theTree.insert(60);
-//        theTree.insert(30);
-//        theTree.insert(70);
+        theTree.insert23(50);
+        theTree.insert23(60);
+        theTree.insert23(90);
+        theTree.insert23(40);
+        theTree.insert23(70);
+        theTree.insert23(80);
+        theTree.insert23(95);
+        theTree.insert23(75);
 
-        for (int i = 0; i < 50; i++) {
-            long newValue = (long)(Math.random() * 100);
-            if (theTree.find(newValue) == -1) {
-                theTree.insert(newValue);
-            }
-        }
+//        for (int i = 0; i < 150; i++) {
+//            long newValue = (long)(Math.random() * 1000);
+//            while (theTree.find(newValue) != -1) {
+//                newValue = (long)(Math.random() * 1000);
+//            }
+//            theTree.insert(newValue);
+//        }
             while (switchedOn) {
                 System.out.print("Enter first letter of ");
                 System.out.print("display, insert, find, minimum, traverse or quit: ");
@@ -274,7 +349,7 @@ public class Tree23App
                     case 'i':
                         System.out.print("Enter value to insert: ");
                         value = getInt();
-                        theTree.insert(value);
+                        theTree.insert23(value);
                         break;
                     case 'f':
                         System.out.print("Enter value to find: ");
