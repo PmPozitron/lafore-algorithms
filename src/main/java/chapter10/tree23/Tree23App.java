@@ -226,50 +226,49 @@ class Tree23 {
             toBeSplit.insertItem(left);
         }
 
-        if (! toBeSplit.getParent().isFull()) {
-            toBeSplit.getParent().insertItem(toBeShifted);
-
-            Node[] nodes = new Node[4];
-            for (int i = 0; i < 3; i++) {
-                nodes[i] = toBeSplit.getChild(i);
-            }
-            nodes[3] = toBeConnected;
-
-            for (Node node : nodes) {
-                if (node == null || node.getItem(0) == null) {
-                    continue;
-                }
-                if (node.getItem(0).dData < toBeSplit.getItem(0).dData) {
-                    toBeSplit.connectChild(0, node);
-
-                } else if (node.getItem(0).dData < toBeShifted.dData) {
-                    toBeSplit.connectChild(1, node);
-
-                } else if (node.getItem(0).dData < newRight.getItem(0).dData) {
-                    newRight.connectChild(0, node);
-
-                } else {
-                    newRight.connectChild(1, node);
-                }
-            }
-
-            int toBeSplitIndex = -1;
-            for (int i = 0; i < 3; i++) {
-                if (toBeSplit.getParent().getChild(i) == toBeSplit) {
-                    toBeSplitIndex = i;
-                }
-            }
-
-            for (int i = 2; i > toBeSplitIndex+1; i--) {
-                toBeSplit.getParent().connectChild(i, toBeSplit.getParent().getChild(i-1));
-            }
-
-            toBeSplit.getParent().connectChild(toBeSplitIndex+1, newRight);
-
+        if (toBeSplit.getParent().isFull()) {
+            split23(toBeSplit.getParent(), toBeShifted, newRight);
 
         } else {
-            split23(toBeSplit.getParent(), toBeShifted, newRight);
+            toBeSplit.getParent().insertItem(toBeShifted);
+
         }
+        Node[] nodes = new Node[4];
+        for (int i = 0; i < 3; i++) {
+            nodes[i] = toBeSplit.getChild(i);
+        }
+        nodes[3] = toBeConnected;
+
+        for (Node node : nodes) {
+            if (node == null || node.getItem(0) == null) {
+                continue;
+            }
+            if (node.getItem(0).dData < toBeSplit.getItem(0).dData) {
+                toBeSplit.connectChild(0, node);
+
+            } else if (node.getItem(0).dData < toBeShifted.dData) {
+                toBeSplit.connectChild(1, node);
+
+            } else if (node.getItem(0).dData < newRight.getItem(0).dData) {
+                newRight.connectChild(0, node);
+
+            } else {
+                newRight.connectChild(1, node);
+            }
+        }
+
+        int toBeSplitIndex = -1;
+        for (int i = 0; i < 3; i++) {
+            if (toBeSplit.getParent().getChild(i) == toBeSplit) {
+                toBeSplitIndex = i;
+            }
+        }
+
+        for (int i = 2; i > toBeSplitIndex + 1; i--) {
+            toBeSplit.getParent().connectChild(i, toBeSplit.getParent().getChild(i - 1));
+        }
+
+        toBeSplit.getParent().connectChild(toBeSplitIndex + 1, newRight);
 
 
     }
@@ -360,29 +359,29 @@ public class Tree23App {
         long value;
         Tree23 theTree = new Tree23();
 
-        theTree.insert23(50);
-        theTree.insert23(60);
-        theTree.insert23(90);
-        theTree.insert23(40);
-        theTree.insert23(70);
-        theTree.insert23(80);
-        theTree.insert23(30);
-        theTree.insert23(95);
-        theTree.insert23(35);
-        theTree.insert23(55);
-        theTree.insert23(3);
-        theTree.insert23(52);
-        theTree.insert23(92);
-        theTree.insert23(93);
+//        theTree.insert23(50);
+//        theTree.insert23(60);
+//        theTree.insert23(90);
+//        theTree.insert23(40);
+//        theTree.insert23(70);
+//        theTree.insert23(80);
+//        theTree.insert23(30);
+//        theTree.insert23(95);
+//        theTree.insert23(35);
+//        theTree.insert23(55);
+//        theTree.insert23(3);
+//        theTree.insert23(52);
+//        theTree.insert23(92);
+//        theTree.insert23(93);
 //        theTree.insert23(94);
 
-//        for (int i = 0; i < 150; i++) {
-//            long newValue = (long)(Math.random() * 1000);
-//            while (theTree.find(newValue) != -1) {
-//                newValue = (long)(Math.random() * 1000);
-//            }
-//            theTree.insert(newValue);
-//        }
+        for (int i = 0; i < 25; i++) {
+            long newValue = (long) (Math.random() * 100);
+            while (theTree.find(newValue) != -1) {
+                newValue = (long) (Math.random() * 100);
+            }
+            theTree.insert23(newValue);
+        }
         while (switchedOn) {
             System.out.print("Enter first letter of ");
             System.out.print("display, insert, find, minimum, traverse or quit: ");
