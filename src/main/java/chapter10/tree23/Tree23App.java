@@ -205,6 +205,7 @@ class Tree23 {
             newRoot.connectChild(0, toBeSplit);
             root = newRoot;
         }
+        // decide what to shift up and what to put in new right sibling
         DataItem right = toBeSplit.removeItem();
         DataItem left = toBeSplit.removeItem();
         DataItem toBeShifted = null;
@@ -225,7 +226,7 @@ class Tree23 {
             newRight.insertItem(right);
             toBeSplit.insertItem(left);
         }
-
+        // split parent providing new right sibling for distributing parent's children purposes
         if (toBeSplit.getParent().isFull()) {
             split23(toBeSplit.getParent(), toBeShifted, newRight);
 
@@ -238,7 +239,7 @@ class Tree23 {
             nodes[i] = toBeSplit.getChild(i);
         }
         nodes[3] = toBeConnected;
-
+//      distribute children bitween node which is being split and new right sibling
         for (Node node : nodes) {
             if (node == null || node.getItem(0) == null) {
                 continue;
@@ -256,21 +257,14 @@ class Tree23 {
                 newRight.connectChild(1, node);
             }
         }
+//      shift children of parent if node being split is on the left of parent
+        if (toBeSplit.getParent().getChild(0) == toBeSplit) {
+            toBeSplit.getParent().connectChild(2, toBeSplit.getParent().disconnectChild(1));
+            toBeSplit.getParent().connectChild(1, newRight);
 
-        int toBeSplitIndex = -1;
-        for (int i = 0; i < 3; i++) {
-            if (toBeSplit.getParent().getChild(i) == toBeSplit) {
-                toBeSplitIndex = i;
-            }
+        } else {
+            toBeSplit.getParent().connectChild(2, newRight);
         }
-
-        for (int i = 2; i > toBeSplitIndex + 1; i--) {
-            toBeSplit.getParent().connectChild(i, toBeSplit.getParent().getChild(i - 1));
-        }
-
-        toBeSplit.getParent().connectChild(toBeSplitIndex + 1, newRight);
-
-
     }
 
     // -------------------------------------------------------------
