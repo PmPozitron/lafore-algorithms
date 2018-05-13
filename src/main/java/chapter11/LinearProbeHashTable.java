@@ -10,11 +10,21 @@ public class LinearProbeHashTable {
 
     private int hashFunction(String forHashing) {
         int result = 0;
-        int symbolCounter = forHashing.length()-1;
-        for (int i = symbolCounter; i>=0; i--) {
-            result += (forHashing.charAt(i) - 96) * Math.pow(27., symbolCounter);
+        int symbolCounter = 1;
+        for (int i = forHashing.length()-1; i>=0; i--) {
+            result += (forHashing.charAt(i) - 96) * (int)Math.pow(27., symbolCounter++);
         }
         result %= table.length;
+
+        return result;
+    }
+
+    private int hashFunction2(String forHashing) {
+        int result = 0;
+        int symbolCounter = forHashing.length()-1;
+        for (int i = symbolCounter; i>=0; i--) {
+            result = (result * 27 + (forHashing.charAt(i) - 96)) % table.length;
+        }
         return result;
     }
 
@@ -25,7 +35,7 @@ public class LinearProbeHashTable {
 
     public int find(String aString) {
         int hash = hashFunction(aString);
-        if (table[hash] != null) {
+        if (table[hash].equals(aString)) {
             return hash;
 
         } else {
