@@ -102,6 +102,35 @@ class HashTable
         }
         return null;                  // can't find item
     }
+
+    public HashTable expandTable() {
+        HashTable newTable = new HashTable(getPrime(hashArray.length * 2));
+
+        for (DataItem item : hashArray) {
+            if (item == null || item.getKey() == nonItem.getKey()) {
+                continue;
+            }
+             newTable.insert(item);
+        }
+
+        this.hashArray = newTable.hashArray;
+        return newTable;
+    }
+
+    private int getPrime(int min)   // returns 1st prime > min
+    {
+        for(int j = min+1; true; j++)    // for all j > min
+            if( isPrime(j) )              // is j prime?
+                return j;                  // yes, return it
+    }
+    // -------------------------------------------------------------
+    private boolean isPrime(int n)      // is n prime?
+    {
+        for(int j=2; (j*j <= n); j++)    // for all j
+            if( n % j == 0)               // divides evenly by j?
+                return false;              // yes, so not prime
+        return true;                     // no, so prime
+    }
 // -------------------------------------------------------------
 }  // end class HashTable
 ////////////////////////////////////////////////////////////////
@@ -132,7 +161,7 @@ public class HashTableApp
         while(switchedOn)                   // interact with user
         {
             System.out.print("Enter first letter of ");
-            System.out.print("show, insert, delete, or find: ");
+            System.out.print("show, insert, delete, find, expand or quit: ");
             char choice = getChar();
             switch(choice)
             {
@@ -163,6 +192,10 @@ public class HashTableApp
                     break;
                 case 'q':
                     switchedOn = false;
+                    break;
+                case 'e' :
+                    theHashTable.displayTable();
+                    theHashTable.expandTable().displayTable();
                     break;
                 default:
                     System.out.print("Invalid entry\n");
