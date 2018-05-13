@@ -1,5 +1,9 @@
 package chapter11;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class LinearProbeHashTable {
 
     private String[] table;
@@ -28,19 +32,47 @@ public class LinearProbeHashTable {
         return result;
     }
 
+    private int hashViaFolding(String forHashing) {
+        List<String> groups = new ArrayList<String>();
+        for (int i = 0, j=0; i < forHashing.length();) {
+            if (i+2 > forHashing.length()) {
+                j = forHashing.length();
+
+            } else {
+                j = i+2;
+            }
+
+            groups.add(forHashing.substring(i, j));
+            i+=2;
+        }
+
+        int result = 0;
+        for (String group : groups) {
+            result += hashFunction(group);
+        }
+
+        return result % table.length;
+    }
+
     public void insert(String aString) {
-        int hash = hashFunction(aString);
+        int hash = hashViaFolding(aString);
+        while (table[hash] != null) {
+            hash++;
+            hash%=table.length;
+        }
         table[hash] = aString;
     }
 
     public int find(String aString) {
-        int hash = hashFunction(aString);
-        if (table[hash].equals(aString)) {
-            return hash;
-
-        } else {
-            return -1;
+        int visitedCount = 0;
+        int hash = hashViaFolding(aString);
+        while (table[hash] != aString && visitedCount < table.length) {
+            visitedCount++;
+            hash++;
+            hash%=table.length;
         }
+
+        return visitedCount < table.length ? hash : -1;
     }
 
     public static void main(String[] args) {
@@ -53,5 +85,9 @@ public class LinearProbeHashTable {
         for (int i = strings.length-1; i>=0; i--) {
             System.out.printf("%s is at %d\n", strings[i], table.find(strings[i]));
         }
+        System.out.printf("%s is at %d\n", "absent", table.find("huy"));
+
+
+        System.out.println(Arrays.toString(table.table));
     }
 }
