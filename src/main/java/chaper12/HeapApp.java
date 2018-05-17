@@ -7,6 +7,8 @@ package chaper12;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+
 ////////////////////////////////////////////////////////////////
 class Node
 {
@@ -167,7 +169,17 @@ class Heap
             trickleUp(i);
         }
     }
-// -------------------------------------------------------------
+
+    @Override
+    public String toString() {
+        int[]result = new int[currentSize];
+        for (int i = 0; i < currentSize; i++) {
+            result[i] = heapArray[i].getKey();
+        }
+        return Arrays.toString(result);
+    }
+
+    // -------------------------------------------------------------
 }  // end class Heap
 ////////////////////////////////////////////////////////////////
 public class HeapApp
