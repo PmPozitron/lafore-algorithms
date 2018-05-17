@@ -151,6 +151,22 @@ class Heap
         }  // end for
         System.out.println("\n"+dots+dots); // dotted bottom line
     }  // end displayHeap()
+
+    public boolean toss(int value) {
+        if (currentSize == maxSize) {
+            return false;
+        }
+
+        Node newNode = new Node(value);
+        heapArray[currentSize++] = newNode;
+        return true;
+    }
+
+    public void restoreHeap() {
+        for (int i = currentSize-1; i >= 0; i--) {
+            trickleUp(i);
+        }
+    }
 // -------------------------------------------------------------
 }  // end class Heap
 ////////////////////////////////////////////////////////////////
@@ -177,7 +193,7 @@ public class HeapApp
         while(switchedOn)                   // until [Ctrl]-[C]
         {
             System.out.print("Enter first letter of ");
-            System.out.print("show, insert, remove, change or quit: ");
+            System.out.print("show, insert, remove, change, toss, heapRestore or quit: ");
             int choice = getChar();
             switch(choice)
             {
@@ -208,6 +224,16 @@ public class HeapApp
                     break;
                 case 'q':
                     switchedOn = false;
+                    break;
+                case 't':
+                    System.out.print("Enter value to toss: ");
+                    value = getInt();
+                    success = theHeap.toss(value);
+                    if( !success )
+                        System.out.println("Can't insert; heap full");
+                    break;
+                case 'h':
+                    theHeap.restoreHeap();
                     break;
                 default:
                     System.out.println("Invalid entry\n");
