@@ -1,9 +1,9 @@
-package chaper12.treeheap;
+package chaper12.binarytreeheap;
 
 import java.io.IOException;
 
-import static chaper12.treeheap.TreeHeapApp.getChar;
-import static chaper12.treeheap.TreeHeapApp.getInt;
+import static chaper12.binarytreeheap.BinaryTreeHeapApp.getChar;
+import static chaper12.binarytreeheap.BinaryTreeHeapApp.getInt;
 
 public class PriorityQueue {
     

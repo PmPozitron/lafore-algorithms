@@ -1,4 +1,4 @@
-package chaper12.treeheap;
+package chaper12.binarytreeheap;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -327,7 +327,7 @@ class Tree {
 ////////////////////////////////////////////////////////////////
 
 
-public class TreeHeapApp {
+public class BinaryTreeHeapApp {
     public static void main(String[] args) throws IOException {
     int value;
     Tree theTree = new Tree();
