@@ -416,7 +416,6 @@ class SearchTreeHeap {
     private void trickleDown(Node trickled) {
         int temp = trickled.getValue();
         Node current = trickled;
-        Node parent = null;
         Node biggerChild = null;
         while (current.getLeft() != null) {
             biggerChild = current.getRight() == null || current.getLeft().getValue() > current.getRight().getValue()
@@ -424,7 +423,6 @@ class SearchTreeHeap {
                     : current.getRight();
 
             if (biggerChild.getValue() > temp) {
-                parent = current;
                 current.setValue(biggerChild.getValue());
                 current = biggerChild;
 
