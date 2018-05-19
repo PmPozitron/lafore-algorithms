@@ -1,46 +1,69 @@
 package chaper12.searchtreeheap;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class SearchTreeHeapApp {
     public static void main(String[] args) {
+        new SearchTreeHeapApp().testDriveWithRandoms();
+
+    }
+
+    private void testDriveWithPredefined() {
         SearchTreeHeap heap = new SearchTreeHeap();
-        int size = 10;
-//        List<Integer> values = asList(8, 5, 4, 1, 3, 6, 0, 2, 7);
-        List<Integer> values = new ArrayList<Integer>(size);
-        for (int i = 0; i < size; i++) {
-            values.add(i);
+
+        int []values = new int[] {93,89,84,69,44,12,54,18,28,5};
+        int inserting = 87;
+        for (int integer : values) {
+            heap.insert(integer);
         }
-        Collections.shuffle(values);
+
+        heap.change(93, 87);
+        System.out.println(heap + " " + heap.containsDups());
+
+
+    }
+
+    private void testDriveWithRandoms() {
+        SearchTreeHeap heap = new SearchTreeHeap();
+        int size = 20;
+        Set<Integer> values = new HashSet<Integer>();
+        while (values.size() < size) {
+            values.add((int) (Math.random() * 100));
+        }
+
+        Integer[] ints = values.toArray(new Integer[]{});
+        for (int integer : ints) {
+            heap.insert(integer);
+        }
+
+        for (int i = 0; i < size; i++) {
+            int random = (int) (Math.random() * 100);
+            while (values.contains(random)) {
+                random = (int) (Math.random() * 100);
+            }
+
+            int randomIndex = (int) (Math.random() * ints.length);
+            while (!values.contains(ints[randomIndex])) {
+                randomIndex = (int) (Math.random() * ints.length);
+            }
+
+            int toBeChanged = ints[randomIndex];
+            values.remove(ints[randomIndex]);
+            values.add(random);
+
+            heap.change(toBeChanged, random);
+            System.out.println(heap + " " + heap.containsDups());
+        }
+
+
 
         for (int i = 0; i < values.size(); i++) {
-            heap.insert(values.get(i) * 2);
+            System.out.println(heap.pollMax());
         }
-
-//        for (int i = 0; i < values.size(); i++) {
-//            System.out.println(heap.pollMax());
-//        }
-
-        System.out.println(heap);
-        heap.change(18, 180);
-        System.out.println(heap);
-        heap.change(180, 13);
-        System.out.println(heap);
-        heap.change(2, 1);
-        System.out.println(heap);
-        heap.change(1, 11);
-        System.out.println(heap);
-        heap.change(12, 5);
-        System.out.println(heap);
-        heap.change(6, 15);
-        System.out.println(heap);
-        //        heap.change(0, -1);
-//        System.out.println(heap);
-
     }
 }
 
@@ -151,8 +174,8 @@ class SearchTreeHeap {
         Node bigger =
                 toBeChanged.getRight() == null ||
                         toBeChanged.getLeft().getValue() > toBeChanged.getRight().getValue()
-                ? toBeChanged.getLeft()
-                : toBeChanged.getRight();
+                        ? toBeChanged.getLeft()
+                        : toBeChanged.getRight();
 
         if (isRoot && newValue > bigger.getValue()) {
             return;
@@ -237,12 +260,12 @@ class SearchTreeHeap {
         List<Node> result = new ArrayList<Node>();
         LinkedList<Node> stack = new LinkedList<Node>();
         stack.addLast(root);
-        while (stack.size() != this.getNodesCount()) {
-            Node current = stack.peek();
+        while (!stack.isEmpty()) {
+            Node current = stack.poll();
             if (current == null) {
                 continue;
             }
-            result.add(stack.poll());
+            result.add(current);
             stack.addLast(current.getLeft());
             stack.addLast(current.getRight());
         }
@@ -255,7 +278,7 @@ class SearchTreeHeap {
         LinkedList<Node> stack = new LinkedList<Node>();
         stack.addLast(root);
 
-        while (! stack.isEmpty()) {
+        while (!stack.isEmpty()) {
             Node current = stack.poll();
             if (current == null) {
                 continue;
@@ -363,7 +386,8 @@ class SearchTreeHeap {
         current.setValue(temp);
     }
 
-    private void trickleDown(Node trickled) {
+    private void trickleDown0(Node trickled) {
+//        System.out.println(this);
 
         Node current = trickled;
         Node parent = null;
@@ -384,7 +408,31 @@ class SearchTreeHeap {
 
             } else {
                 parent.setValue(temp);
+                break;
             }
         }
     }
+
+    private void trickleDown(Node trickled) {
+        int temp = trickled.getValue();
+        Node current = trickled;
+        Node parent = null;
+        Node biggerChild = null;
+        while (current.getLeft() != null) {
+            biggerChild = current.getRight() == null || current.getLeft().getValue() > current.getRight().getValue()
+                    ? current.getLeft()
+                    : current.getRight();
+
+            if (biggerChild.getValue() > temp) {
+                parent = current;
+                current.setValue(biggerChild.getValue());
+                current = biggerChild;
+
+            } else {
+                break;
+            }
+        }
+        current.setValue(temp);
+    }
+
 }
