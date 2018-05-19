@@ -1,6 +1,15 @@
 package chaper12.searchtreeheap;
 
 public class SearchTreeHeapApp {
+    public static void main(String[] args) {
+        SearchTreeHeap heap = new SearchTreeHeap();
+
+        for (int i = 0; i < 13; i++) {
+            heap.insert(i);
+        }
+
+        System.out.println(heap);
+    }
 }
 
 class Node {
@@ -8,6 +17,13 @@ class Node {
     private Node left;
     private Node right;
     private Node parent;
+
+    public Node() {
+    }
+
+    public Node(int value) {
+        this.value = value;
+    }
 
     public int getValue() {
         return value;
@@ -42,13 +58,11 @@ class Node {
     }
 }
 
-class SearchTree {
+class SearchTreeHeap {
     private Node root;
     private int nodesCount;
 
-    public SearchTree() {
-        this.root = new Node();
-        nodesCount++;
+    public SearchTreeHeap() {
     }
 
     public int getNodesCount() {
@@ -68,6 +82,7 @@ class SearchTree {
      * The number 29 decimal is 11101 binary. Remove the initial 1, leaving 1101.
      * This is the path from the root to node 29: right, right, left, right.
      * The first available null node is 30, which (after removing the initial 1) is 1110 binary: right, right, right, left.
+     *
      * @return nodes count as binary string
      */
     private String nodesCountAsBinary() {
@@ -78,27 +93,108 @@ class SearchTree {
         return root == null;
     }
 
-    public void insert (int value) {
-
-    }
-
-    public void trickleUp() {
-
-    }
-
-    public void trickleDown() {
-
+    public void insert(int value) {
+        Node newNode = insertNewNode(value);
+        trickleUp(newNode);
     }
 
     public void change() {
 
     }
 
-    public Node peekMax() {
-        return null;
+    public int peekMax() {
+        return root.getValue();
     }
 
     public Node pollMax() {
         return null;
+    }
+
+    private Node insertNewNode(int value) {
+        if (root == null) {
+            root = new Node(value);
+            nodesCount++;
+            return root;
+        }
+
+        String pathToNull = Integer.toBinaryString(nodesCount + 1).substring(1);
+        if (pathToNull.isEmpty()) {
+            Node newNode = new Node(value);
+            newNode.setParent(root);
+            root.setLeft(newNode);
+            nodesCount++;
+            return newNode;
+        }
+
+        Node parent = null;
+        Node current = root;
+        boolean isLeft = true;
+
+        for (char elememt : pathToNull.toCharArray()) {
+            if ('0' == elememt) {
+                parent = current;
+                current = current.getLeft();
+                isLeft = true;
+
+            } else if ('1' == elememt) {
+                parent = current;
+                current = current.getRight();
+                isLeft = false;
+            }
+        }
+        current = new Node(value);
+        current.setParent(parent);
+        if (isLeft) {
+            parent.setLeft(current);
+        } else {
+            parent.setRight(current);
+        }
+        nodesCount++;
+        return current;
+    }
+
+    private Node findAPlaceForNew() {
+        String pathToNull = Integer.toBinaryString(nodesCount + 1).substring(1);
+        return findByPath(pathToNull);
+    }
+
+    private Node findLastNode() {
+        String pathToLast = Integer.toBinaryString(nodesCount).substring(1);
+        return findByPath(pathToLast);
+    }
+
+    private Node findByPath(String path) {
+        Node parent = null;
+        Node current = root;
+
+        for (char elememt : path.toCharArray()) {
+            while (current != null) {
+                if ('0' == elememt) {
+                    current = current.getLeft();
+                    parent = current;
+                } else {
+                    current = current.getRight();
+                    parent = current;
+                }
+            }
+        }
+        return current;
+    }
+
+    private void trickleUp(Node trickled) {
+        if (root == trickled) {
+            return;
+        }
+        Node current = trickled;
+        int temp = trickled.getValue();
+        while (current != root && current.getParent().getValue() < temp) {
+            current.setValue(current.getParent().getValue());
+            current = current.getParent();
+        }
+        current.setValue(temp);
+    }
+
+    private void trickleDown() {
+
     }
 }
