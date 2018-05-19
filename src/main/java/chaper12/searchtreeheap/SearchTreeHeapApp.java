@@ -1,14 +1,30 @@
 package chaper12.searchtreeheap;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+
 public class SearchTreeHeapApp {
     public static void main(String[] args) {
         SearchTreeHeap heap = new SearchTreeHeap();
+        int size = 39;
+//        List<Integer> values = asList(8, 5, 4, 1, 3, 6, 0, 2, 7);
+        List<Integer> values = new ArrayList<Integer>(size);
+        for (int i = 0; i < size; i++) {
+            values.add(i);
+        }
+        Collections.shuffle(values);
 
-        for (int i = 0; i < 13; i++) {
-            heap.insert(i);
+        for (int i = 0; i < values.size(); i++) {
+            heap.insert(values.get(i));
         }
 
-        System.out.println(heap);
+        for (int i = 0; i < values.size(); i++) {
+            System.out.println(heap.pollMax());
+        }
+
     }
 }
 
@@ -106,8 +122,83 @@ class SearchTreeHeap {
         return root.getValue();
     }
 
-    public Node pollMax() {
-        return null;
+    public int pollMax() {
+        Node exRoot = root;
+        Node last = findLastNode();
+        if (last == root) {
+            root = null;
+            return exRoot.getValue();
+        }
+        Node parentOfLast = last.getParent();
+        boolean isLeft = last == parentOfLast.getLeft() ? true : false;
+        if (isLeft) {
+            parentOfLast.setLeft(null);
+        } else {
+            parentOfLast.setRight(null);
+        }
+        last.setParent(null);
+        root = last;
+        root.setLeft(exRoot.getLeft());
+        root.setRight(exRoot.getRight());
+        if (exRoot.getLeft() != null) {
+            exRoot.getLeft().setParent(root);
+        }
+
+        if (exRoot.getRight() != null) {
+            exRoot.getRight().setParent(root);
+        }
+
+        trickleDown(root);
+        nodesCount--;
+
+        return exRoot.getValue();
+    }
+
+    public void traverse() {
+        traverse(root);
+        System.out.println();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        List<Integer> numbers = traverseInto();
+        int i = 0;
+        for (Integer integer : numbers) {
+            result.append(integer).append(" ");
+        }
+
+        return result.toString();
+    }
+
+    public List<Integer> traverseInto() {
+        List<Integer> result = new ArrayList<Integer>();
+        LinkedList<Node> stack = new LinkedList<Node>();
+        stack.addLast(root);
+
+        while (! stack.isEmpty()) {
+            Node current = stack.poll();
+            if (current == null) {
+                continue;
+            }
+            result.add(current.getValue());
+            stack.addLast(current.getLeft());
+            stack.addLast(current.getRight());
+        }
+        return result;
+    }
+
+    public boolean containsDups() {
+        List<Integer> contents = traverseInto();
+        return new HashSet<Integer>(contents).size() != contents.size();
+    }
+
+    private void traverse(Node localRoot) {
+        if (localRoot != null) {
+            traverse(localRoot.getLeft());
+            System.out.print(localRoot.getValue() + " ");
+            traverse(localRoot.getRight());
+        }
     }
 
     private Node insertNewNode(int value) {
@@ -118,13 +209,13 @@ class SearchTreeHeap {
         }
 
         String pathToNull = Integer.toBinaryString(nodesCount + 1).substring(1);
-        if (pathToNull.isEmpty()) {
-            Node newNode = new Node(value);
-            newNode.setParent(root);
-            root.setLeft(newNode);
-            nodesCount++;
-            return newNode;
-        }
+//        if (pathToNull.isEmpty()) {
+//            Node newNode = new Node(value);
+//            newNode.setParent(root);
+//            root.setLeft(newNode);
+//            nodesCount++;
+//            return newNode;
+//        }
 
         Node parent = null;
         Node current = root;
@@ -168,14 +259,13 @@ class SearchTreeHeap {
         Node current = root;
 
         for (char elememt : path.toCharArray()) {
-            while (current != null) {
-                if ('0' == elememt) {
-                    current = current.getLeft();
-                    parent = current;
-                } else {
-                    current = current.getRight();
-                    parent = current;
-                }
+            if ('0' == elememt) {
+                current = current.getLeft();
+                parent = current;
+            } else {
+                current = current.getRight();
+                parent = current;
+
             }
         }
         return current;
@@ -194,7 +284,28 @@ class SearchTreeHeap {
         current.setValue(temp);
     }
 
-    private void trickleDown() {
+    private void trickleDown(Node trickled) {
 
+        Node current = trickled;
+        Node parent = null;
+        int temp = trickled.getValue();
+
+        while (current.getLeft() != null) {
+            parent = current;
+            if (current.getRight() == null || current.getLeft().getValue() > current.getRight().getValue()) {
+                current = current.getLeft();
+
+            } else {
+                current = current.getRight();
+            }
+
+            if (current.getValue() > temp) {
+                parent.setValue(current.getValue());
+                current.setValue(temp);
+
+            } else {
+                parent.setValue(temp);
+            }
+        }
     }
 }
