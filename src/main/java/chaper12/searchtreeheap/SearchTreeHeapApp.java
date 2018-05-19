@@ -9,7 +9,7 @@ import java.util.List;
 public class SearchTreeHeapApp {
     public static void main(String[] args) {
         SearchTreeHeap heap = new SearchTreeHeap();
-        int size = 39;
+        int size = 10;
 //        List<Integer> values = asList(8, 5, 4, 1, 3, 6, 0, 2, 7);
         List<Integer> values = new ArrayList<Integer>(size);
         for (int i = 0; i < size; i++) {
@@ -18,12 +18,28 @@ public class SearchTreeHeapApp {
         Collections.shuffle(values);
 
         for (int i = 0; i < values.size(); i++) {
-            heap.insert(values.get(i));
+            heap.insert(values.get(i) * 2);
         }
 
-        for (int i = 0; i < values.size(); i++) {
-            System.out.println(heap.pollMax());
-        }
+//        for (int i = 0; i < values.size(); i++) {
+//            System.out.println(heap.pollMax());
+//        }
+
+        System.out.println(heap);
+        heap.change(18, 180);
+        System.out.println(heap);
+        heap.change(180, 13);
+        System.out.println(heap);
+        heap.change(2, 1);
+        System.out.println(heap);
+        heap.change(1, 11);
+        System.out.println(heap);
+        heap.change(12, 5);
+        System.out.println(heap);
+        heap.change(6, 15);
+        System.out.println(heap);
+        //        heap.change(0, -1);
+//        System.out.println(heap);
 
     }
 }
@@ -114,8 +130,54 @@ class SearchTreeHeap {
         trickleUp(newNode);
     }
 
-    public void change() {
+    public void change(int oldValue, int newValue) {
+        List<Node> nodes = traverseIntoNodes();
+        Node toBeChanged = null;
+        for (Node node : nodes) {
+            if (node != null && node.getValue() == oldValue) {
+                toBeChanged = node;
+            }
+        }
+        if (toBeChanged == null) {
+            return;
+        }
+        toBeChanged.setValue(newValue);
+        if (nodes.size() == 1) {
+            return;
+        }
 
+        boolean isRoot = toBeChanged == root;
+        boolean isLeaf = toBeChanged.getLeft() == null;
+        Node bigger =
+                toBeChanged.getRight() == null ||
+                        toBeChanged.getLeft().getValue() > toBeChanged.getRight().getValue()
+                ? toBeChanged.getLeft()
+                : toBeChanged.getRight();
+
+        if (isRoot && newValue > bigger.getValue()) {
+            return;
+        }
+
+        if (isRoot && newValue < bigger.getValue()) {
+            trickleDown(toBeChanged);
+            return;
+        }
+
+        if (isLeaf && newValue < toBeChanged.getParent().getValue()) {
+            return;
+        }
+
+        if (isLeaf && newValue > toBeChanged.getParent().getValue()) {
+            trickleUp(toBeChanged);
+            return;
+        }
+
+        if (newValue > toBeChanged.getParent().getValue()) {
+            trickleUp(toBeChanged);
+
+        } else if (newValue < bigger.getValue()) {
+            trickleDown(toBeChanged);
+        }
     }
 
     public int peekMax() {
@@ -162,7 +224,7 @@ class SearchTreeHeap {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        List<Integer> numbers = traverseInto();
+        List<Integer> numbers = traverseIntoIntegers();
         int i = 0;
         for (Integer integer : numbers) {
             result.append(integer).append(" ");
@@ -171,7 +233,24 @@ class SearchTreeHeap {
         return result.toString();
     }
 
-    public List<Integer> traverseInto() {
+    public List<Node> traverseIntoNodes() {
+        List<Node> result = new ArrayList<Node>();
+        LinkedList<Node> stack = new LinkedList<Node>();
+        stack.addLast(root);
+        while (stack.size() != this.getNodesCount()) {
+            Node current = stack.peek();
+            if (current == null) {
+                continue;
+            }
+            result.add(stack.poll());
+            stack.addLast(current.getLeft());
+            stack.addLast(current.getRight());
+        }
+
+        return result;
+    }
+
+    public List<Integer> traverseIntoIntegers() {
         List<Integer> result = new ArrayList<Integer>();
         LinkedList<Node> stack = new LinkedList<Node>();
         stack.addLast(root);
@@ -189,7 +268,7 @@ class SearchTreeHeap {
     }
 
     public boolean containsDups() {
-        List<Integer> contents = traverseInto();
+        List<Integer> contents = traverseIntoIntegers();
         return new HashSet<Integer>(contents).size() != contents.size();
     }
 
