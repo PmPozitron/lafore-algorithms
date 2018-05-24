@@ -34,11 +34,13 @@ class Vertex
 {
     public char label;        // label (e.g. 'A')
     public boolean wasVisited;
+    LinkList adjacents;
     // ------------------------------------------------------------
     public Vertex(char lab)   // constructor
     {
         label = lab;
         wasVisited = false;
+        adjacents = new LinkList();
     }
 // ------------------------------------------------------------
 }  // end class Vertex
@@ -47,7 +49,7 @@ class Graph
 {
     private final int MAX_VERTS = 20;
     private Vertex vertexList[]; // list of vertices
-    private int adjMat[][];      // adjacency matrix
+//    private int adjMat[][];      // adjacency matrix
     private int nVerts;          // current number of vertices
     private StackX theStack;
     // ------------------------------------------------------------
@@ -55,11 +57,11 @@ class Graph
     {
         vertexList = new Vertex[MAX_VERTS];
         // adjacency matrix
-        adjMat = new int[MAX_VERTS][MAX_VERTS];
+//        adjMat = new int[MAX_VERTS][MAX_VERTS];
         nVerts = 0;
-        for(int y=0; y<MAX_VERTS; y++)      // set adjacency
-            for(int x=0; x<MAX_VERTS; x++)   //    matrix to 0
-                adjMat[x][y] = 0;
+//        for(int y=0; y<MAX_VERTS; y++)      // set adjacency
+//            for(int x=0; x<MAX_VERTS; x++)   //    matrix to 0
+//                adjMat[x][y] = 0;
         theStack = new StackX();
     }  // end constructor
     // ------------------------------------------------------------
@@ -70,8 +72,9 @@ class Graph
     // ------------------------------------------------------------
     public void addEdge(int start, int end)
     {
-        adjMat[start][end] = 1;
-        adjMat[end][start] = 1;
+//        adjMat[start][end] = 1;
+//        adjMat[end][start] = 1;
+        vertexList[start].adjacents.insertFirst(end, false);
     }
     // ------------------------------------------------------------
     public void displayVertex(int v)
@@ -94,22 +97,35 @@ class Graph
             else                           // if it exists,
             {
                 vertexList[v].wasVisited = true;  // mark it
+                for (Vertex vertex : vertexList) {
+                    if (vertex == null) {
+                        break;
+                    }
+                    vertex.adjacents.setVisitedForIndex(v);
+                }
                 displayVertex(v);                 // display it
                 theStack.push(v);                 // push it
             }
         }  // end while
 
         // stack is empty, so we're done
-        for(int j=0; j<nVerts; j++)          // reset flags
+        for(int j=0; j<nVerts; j++) {        // reset flags
             vertexList[j].wasVisited = false;
+            vertexList[j].adjacents.resetVisitedStatus();
+        }
+
     }  // end dfs
     // ------------------------------------------------------------
     // returns an unvisited vertex adj to v
     public int getAdjUnvisitedVertex(int v)
     {
-        for(int j=0; j<nVerts; j++)
-            if(adjMat[v][j]==1 && vertexList[j].wasVisited==false)
-                return j;
+//        for(int j=0; j<nVerts; j++)
+//            if(adjMat[v][j]==1 && vertexList[j].wasVisited==false)
+//                return j;
+        Link link = vertexList[v].adjacents.findUnvisited();
+        if (link != null) {
+            return link.iData;
+        }
         return -1;
     }  // end getAdjUnvisitedVertex()
 // ------------------------------------------------------------
@@ -125,11 +141,13 @@ class DFSApp
         theGraph.addVertex('C');    // 2
         theGraph.addVertex('D');    // 3
         theGraph.addVertex('E');    // 4
+        theGraph.addVertex('G');    // 5
 
         theGraph.addEdge(0, 1);     // AB
         theGraph.addEdge(1, 2);     // BC
         theGraph.addEdge(0, 3);     // AD
         theGraph.addEdge(3, 4);     // DE
+        theGraph.addEdge(2, 5);     // CE
 
         System.out.print("Visits: ");
         theGraph.dfs();             // depth-first search
