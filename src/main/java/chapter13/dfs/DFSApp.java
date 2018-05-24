@@ -128,6 +128,14 @@ class Graph
         }
         return -1;
     }  // end getAdjUnvisitedVertex()
+
+    public void displayConnectivity() {
+        for (int i = 0; i < nVerts; i++) {
+            displayVertex(i);
+            System.out.print(" " + i + " ");
+            vertexList[i].adjacents.displayList();
+        }
+    }
 // ------------------------------------------------------------
 }  // end class Graph
 ////////////////////////////////////////////////////////////////
@@ -147,11 +155,12 @@ class DFSApp
         theGraph.addEdge(1, 2);     // BC
         theGraph.addEdge(0, 3);     // AD
         theGraph.addEdge(3, 4);     // DE
-        theGraph.addEdge(2, 5);     // CE
+        theGraph.addEdge(2, 5);     // CG
 
         System.out.print("Visits: ");
         theGraph.dfs();             // depth-first search
         System.out.println();
+        theGraph.displayConnectivity();
     }  // end main()
 }  // end class DFSApp
 ////////////////////////////////////////////////////////////////
