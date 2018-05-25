@@ -45,7 +45,7 @@ class Vertex
 ////////////////////////////////////////////////////////////////
 class Graph
 {
-    private final int MAX_VERTS = 20;
+    private final int MAX_VERTS = 3;
     private Vertex vertexList[]; // list of vertices
     private int adjMat[][];      // adjacency matrix
     private int nVerts;          // current number of vertices
@@ -62,6 +62,11 @@ class Graph
                 adjMat[j][k] = 0;
         theStack = new StackX();
     }  // end constructor
+
+    public int getnVerts() {
+        return nVerts;
+    }
+
     // -------------------------------------------------------------
     public void addVertex(char lab)
     {
@@ -71,7 +76,7 @@ class Graph
     public void addEdge(int start, int end)
     {
         adjMat[start][end] = 1;
-        adjMat[end][start] = 1;
+//        adjMat[end][start] = 1;
     }
     // -------------------------------------------------------------
     public void displayVertex(int v)
@@ -115,6 +120,23 @@ class Graph
                 return j;
         return -1;
     }  // end getAdjUnvisitedVert()
+
+    public int[][] transitiveClosure() {
+        int[][]result = new int[MAX_VERTS][MAX_VERTS];
+        for (int i = 0; i < nVerts; i++) {
+            for (int j = 0; j < nVerts; j++){
+                if (adjMat[i][j] == 1) {
+                    result[i][j] = 1;
+                    for (int k = 0; k < nVerts; k++){
+                        if (adjMat[k][i] == 1) {
+                            result[j][k] = 1;
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
 // -------------------------------------------------------------
 }  // end class Graph
 ////////////////////////////////////////////////////////////////
@@ -126,31 +148,42 @@ public class MSTApp
         theGraph.addVertex('A');    // 0  (start for bfs)
         theGraph.addVertex('B');    // 1
         theGraph.addVertex('C');    // 2
-        theGraph.addVertex('D');    // 3
-        theGraph.addVertex('E');    // 4
-        theGraph.addVertex('F');    // 5
-        theGraph.addVertex('G');    // 6
-        theGraph.addVertex('H');    // 7
-        theGraph.addVertex('J');    // 8
 
-        theGraph.addEdge(0, 1);     //
-        theGraph.addEdge(0, 3);     //
-        theGraph.addEdge(0, 5);     //
-        theGraph.addEdge(0, 7);     //
+        theGraph.addEdge(0,1);
+        theGraph.addEdge(1,2);
+//        theGraph.addVertex('D');    // 3
+//        theGraph.addVertex('E');    // 4
+//        theGraph.addVertex('F');    // 5
+//        theGraph.addVertex('G');    // 6
+//        theGraph.addVertex('H');    // 7
+//        theGraph.addVertex('J');    // 8
 
-        theGraph.addEdge(1, 2);     //
-        theGraph.addEdge(1, 4);     //
-        theGraph.addEdge(1, 6);     //
-        theGraph.addEdge(1, 8);     //
+//        theGraph.addEdge(0, 1);     //
+//        theGraph.addEdge(0, 3);     //
+//        theGraph.addEdge(0, 5);     //
+//        theGraph.addEdge(0, 7);     //
 
-        theGraph.addEdge(2, 0);     //
-        theGraph.addEdge(2, 3);     //
-        theGraph.addEdge(4, 0);     //
-        theGraph.addEdge(5, 1);     //
+//        theGraph.addEdge(1, 2);     //
+//        theGraph.addEdge(1, 4);     //
+//        theGraph.addEdge(1, 6);     //
+//        theGraph.addEdge(1, 8);     //
 
-        System.out.print("Minimum spanning tree: ");
-        theGraph.mst();             // minimum spanning tree
-        System.out.println();
+//        theGraph.addEdge(2, 0);     //
+//        theGraph.addEdge(2, 3);     //
+//        theGraph.addEdge(4, 0);     //
+//        theGraph.addEdge(5, 1);     //
+
+//        System.out.print("Minimum spanning tree: ");
+//        theGraph.mst();             // minimum spanning tree
+//        System.out.println();
+
+        int[][]closure = theGraph.transitiveClosure();
+        for (int i = 0; i <theGraph.getnVerts(); i++) {
+            for (int j = 0; j < theGraph.getnVerts(); j++) {
+                System.out.print(closure[i][j]);
+            }
+            System.out.println();
+        }
     }  // end main()
 }  // end class MSTApp
 ////////////////////////////////////////////////////////////////
