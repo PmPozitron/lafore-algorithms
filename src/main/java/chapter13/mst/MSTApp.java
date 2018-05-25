@@ -129,7 +129,7 @@ class Graph
                     result[i][j] = 1;
                     for (int k = 0; k < nVerts; k++){
                         if (adjMat[k][i] == 1) {
-                            result[j][k] = 1;
+                            result[k][j] = 1;
                         }
                     }
                 }
