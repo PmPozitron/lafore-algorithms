@@ -47,14 +47,14 @@ public class KnightsTour {
                 }
                 Set<Vertex> moves = createValidDestinations(current);
                 current.setEdges(moves);
-                if (moves.isEmpty()) {
-                    stack.poll();
-                    graph.removeVertex(current);
-                } else {
+//                if (moves.isEmpty()) {
+//                    stack.poll();
+//                    graph.removeVertex(current);
+//                } else {
                     for (Vertex move : moves){
                         stack.addFirst(move);
                     }
-                }
+//                }
             }
             graph = new Graph();
         }
