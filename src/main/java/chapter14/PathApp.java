@@ -63,6 +63,9 @@ class Graph {
         vertexList[nVerts++] = new Vertex(lab);
     }
 
+    public int getnVerts() {
+        return nVerts;
+    }
     // -------------------------------------------------------------
     public void addEdge(int start, int end, int weight) {
         adjMat[start][end] = weight;  // (directed)
@@ -71,8 +74,8 @@ class Graph {
     // -------------------------------------------------------------
     public void path()                // find all shortest paths
     {
-        for (int i = 0; i < nVerts; i++) {
-            int startTree = i;             // start at vertex 0
+//        for (int i = 0; i < nVerts; i++) {
+            int startTree = 0;             // start at vertex 0
             vertexList[startTree].isInTree = true;
             nTree = 1;                     // put it in tree
 
@@ -108,7 +111,7 @@ class Graph {
             nTree = 0;                     // clear tree
             for (int j = 0; j < nVerts; j++)
                 vertexList[j].isInTree = false;
-        }
+//        }
 
     }  // end path()
 
@@ -171,6 +174,29 @@ class Graph {
         }
         System.out.println("");
     }
+
+    public int[][] allPairsShortestPath() {
+        int [][]result = new int[nVerts][nVerts];
+        for (int i = 0; i < nVerts; i++) {
+            for (int j = 0; j < nVerts; j++) {
+                result[i][j] = adjMat[i][j];
+
+                if (adjMat[i][j] != INFINITY) {
+                    for (int k = 0; k < nVerts; k++) {
+                        if (adjMat[k][i] != INFINITY){
+                            if (result[k][j] > 0 && adjMat[k][i] + adjMat[i][j] < result[k][j]) {
+                                System.out.printf("[%d][%d][%d] old weight %d, new weight %d\n", k, j, i, result[k][j], adjMat[k][i] + adjMat[i][j]);
+                                result[k][j] = adjMat[k][i] + adjMat[i][j];
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
+        return result;
+    }
 // -------------------------------------------------------------
 }  // end class Graph
 
@@ -193,9 +219,19 @@ public class PathApp {
         theGraph.addEdge(3, 4, 70);  // DE 70
         theGraph.addEdge(4, 1, 50);  // EB 50
 
-        System.out.println("Shortest paths");
-        theGraph.path();             // shortest paths
-        System.out.println();
+//        System.out.println("Shortest paths");
+//        theGraph.path();             // shortest paths
+//        System.out.println();
+
+        int[][]allPairsShortestPath = theGraph.allPairsShortestPath();
+        for (int i = 0; i < theGraph.getnVerts(); i++) {
+            for (int j = 0; j < theGraph.getnVerts(); j++){
+                System.out.print(allPairsShortestPath[i][j] + "\t");
+            }
+            System.out.println();
+
+        }
+
     }  // end main()
 }  // end class PathApp
 ////////////////////////////////////////////////////////////////
