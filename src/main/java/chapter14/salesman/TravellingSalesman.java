@@ -1,11 +1,11 @@
 package chapter14.salesman;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Set;
-
-import static java.util.Arrays.asList;
 
 public class TravellingSalesman {
 
@@ -37,46 +37,56 @@ public class TravellingSalesman {
         e.getEdges().add(new Edge(d, 10));
         e.getEdges().add(new Edge(c, 2));
 
-        LinkedHashSet<Character> route = new LinkedHashSet<Character>();
-        route.add(a.getSymbol());
+        LinkedList<Vertex> route = new LinkedList<Vertex>();
+        route.add(a);
         int totalLength = 0;
         LinkedList<Edge> stack = new LinkedList<Edge>();
         for (Edge edge : a.getEdges()) {
             stack.addFirst(edge);
         }
 
-        while (! stack.isEmpty()) {
-            Edge current = stack.peek();
-            if (route.contains(current.getDestination().getSymbol())) {
-                stack.poll();
-                route.remove(current.getDestination().getSymbol());
-                totalLength -= current.getLength();
-                continue;
-            }
-
-            route.add(current.getDestination().getSymbol());
-            current.setVisited(true);
+        while (!stack.isEmpty()) {
+            Edge current = stack.poll();
+            route.add(current.getDestination());
             totalLength += current.getLength();
-            if (route.containsAll(asList(a.getSymbol(), b.getSymbol(), c.getSymbol(), d.getSymbol(), e.getSymbol()))) {
-                System.out.println(new String(Arrays.toString(route.toArray()) + " " + totalLength));
-                while (current.isVisited()) {
-                    current = stack.poll();
-                    if (route.remove(current.getDestination().getSymbol())) {
-                        totalLength -= current.getLength();
+            current.setVisited(true);
+
+            if (route.size() == 5) {
+                System.out.println(Arrays.toString(route.toArray()) + " " + totalLength);
+                boolean toContinue = true;
+                while (toContinue && route.size() > 2) {
+                    Vertex last = route.pollLast();
+                    Vertex preLast = route.pollLast();
+                    route.addLast(preLast);
+                    Set<Edge> preLastsEdges = new HashSet<Edge>(preLast.getEdges());
+
+                    for (Iterator<Edge> iterator = preLastsEdges.iterator(); iterator.hasNext(); ) {
+                        Edge edge = iterator.next();
+
+                        if (edge.getDestination().getSymbol() == last.getSymbol()) {
+                            totalLength -= edge.getLength();
+                            iterator.remove();
+
+                        } else if (route.contains(edge.getDestination())) {
+                            iterator.remove();
+                        } else if (edge.isVisited()) {
+                            iterator.remove();
+                        }
+                    }
+
+                    if (!preLastsEdges.isEmpty()) {
+                        toContinue = false;
                     }
                 }
-
                 continue;
             }
 
-            for (Edge next : current.getDestination().getEdges()) {
-                stack.addFirst(next);
+            for (Edge edge : current.getDestination().getEdges()) {
+                if (!route.contains(edge.getDestination())) {
+                    stack.addFirst(edge);
+                }
             }
-//            stack.poll();
         }
-
-        System.out.println(new String(Arrays.toString(route.toArray()) + " " + totalLength));
-
     }
 
 
@@ -144,6 +154,14 @@ public class TravellingSalesman {
         @Override
         public int hashCode() {
             return (int) symbol;
+        }
+
+
+        @Override
+        public String toString() {
+            return "Vertex{" +
+                    "symbol=" + symbol +
+                    '}';
         }
     }
 
