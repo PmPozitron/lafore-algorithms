@@ -22,23 +22,25 @@ public class HamiltonCycle {
         Vertex e = new Vertex('E', new LinkedHashSet<Edge>());
 
         a.getEdges().add(new Edge(b, 5));
+        a.getEdges().add(new Edge(c, 5));
+        a.getEdges().add(new Edge(e, 5));
 
         b.getEdges().add(new Edge(a, 5));
-        b.getEdges().add(new Edge(c, 7));
+//        b.getEdges().add(new Edge(c, 7));
         b.getEdges().add(new Edge(d, 8));
 
-        c.getEdges().add(new Edge(b, 7));
-        c.getEdges().add(new Edge(d, 3));
+//        c.getEdges().add(new Edge(b, 7));
+//        c.getEdges().add(new Edge(d, 3));
         c.getEdges().add(new Edge(e, 2));
+//        c.getEdges().add(new Edge(a, 9));
 
-        c.getEdges().add(new Edge(a, 9));
-
-        d.getEdges().add(new Edge(b, 8));
+//        d.getEdges().add(new Edge(b, 8));
         d.getEdges().add(new Edge(c, 3));
-        d.getEdges().add(new Edge(e, 10));
+//        d.getEdges().add(new Edge(e, 10));
 
         e.getEdges().add(new Edge(d, 10));
         e.getEdges().add(new Edge(c, 2));
+        e.getEdges().add(new Edge(a, 2));
 
         Vertex[] vertices = new Vertex[]{a, b, c, d, e};
 
@@ -79,20 +81,20 @@ public class HamiltonCycle {
                         for (Iterator<Edge> iterator = preLastsEdges.iterator(); iterator.hasNext(); ) {
                             Edge edge = iterator.next();
                             // perhaps, it surplus - last if branch will remove it as it should be visited
-                            if (edge.getDestination().getSymbol() == last.getSymbol()) {
-                                iterator.remove();
+//                            if (edge.getDestination().getSymbol() == last.getSymbol()) {
+//                                iterator.remove();
 
-                            } else if (route.contains(edge.getDestination())) {
+//                            } else
+                            if (route.contains(edge.getDestination())) {
                                 iterator.remove();
+                                for (Edge toResetVisited : edge.getDestination().getEdges()) {
+                                    toResetVisited.setVisited(false);
+                                }
 
                             } else if (edge.isVisited()) {
                                 iterator.remove();
                             }
                         }
-
-//                        if (route.size() == 2) {
-//                            route.pollLast();
-//                        }
 
                         if (!preLastsEdges.isEmpty()) {
                             toContinue = false;
@@ -108,8 +110,25 @@ public class HamiltonCycle {
                         wereAdditions = true;
                     }
                 }
-                if (! wereAdditions) {
-                    route.pollLast();
+                if (!wereAdditions) {
+                    Vertex last = route.pollLast();
+                    for (Edge toResetVisited : last.getEdges()) {
+                        toResetVisited.setVisited(false);
+                    }
+
+                    boolean toBeContinued = true;
+                    while (toBeContinued) {
+                        Vertex preLast = route.pollLast();
+                        for (Edge edge : preLast.getEdges()) {
+                            if (! edge.isVisited() && ! route.contains(edge.getDestination())) {
+                                toBeContinued = false;
+                                route.addLast(preLast);
+                                break;
+                            }
+                        }
+                    }
+
+
                 }
             }
         }
