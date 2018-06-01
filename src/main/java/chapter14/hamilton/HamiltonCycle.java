@@ -45,6 +45,12 @@ public class HamiltonCycle {
         for (int i = 0; i < vertices.length; i++) {
 //        for (int i = 2; i < 3; i++) {
 
+            for (Vertex vertex : vertices) {
+                for (Edge edge : vertex.getEdges()) {
+                    edge.setVisited(false);
+                }
+            }
+
             LinkedList<Vertex> route = new LinkedList<Vertex>();
             route.add(vertices[i]);
             LinkedList<Edge> stack = new LinkedList<Edge>();
@@ -64,7 +70,7 @@ public class HamiltonCycle {
                         }
                     }
                     boolean toContinue = true;
-                    while (toContinue && route.size() > 2) {
+                    while (toContinue && route.size() > 1) {
                         Vertex last = route.pollLast();
                         Vertex preLast = route.pollLast();
                         route.addLast(preLast);
@@ -72,7 +78,7 @@ public class HamiltonCycle {
 
                         for (Iterator<Edge> iterator = preLastsEdges.iterator(); iterator.hasNext(); ) {
                             Edge edge = iterator.next();
-
+                            // perhaps, it surplus - last if branch will remove it as it should be visited
                             if (edge.getDestination().getSymbol() == last.getSymbol()) {
                                 iterator.remove();
 
@@ -95,11 +101,15 @@ public class HamiltonCycle {
                     }
                     continue;
                 }
-
+                boolean wereAdditions = false;
                 for (Edge edge : current.getDestination().getEdges()) {
                     if (!route.contains(edge.getDestination())) {
                         stack.addFirst(edge);
+                        wereAdditions = true;
                     }
+                }
+                if (! wereAdditions) {
+                    route.pollLast();
                 }
             }
         }
