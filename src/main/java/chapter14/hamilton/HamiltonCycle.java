@@ -40,62 +40,70 @@ public class HamiltonCycle {
         e.getEdges().add(new Edge(d, 10));
         e.getEdges().add(new Edge(c, 2));
 
-        LinkedList<Vertex> route = new LinkedList<Vertex>();
-        route.add(a);
-        int totalLength = 0;
-        LinkedList<Edge> stack = new LinkedList<Edge>();
-        for (Edge edge : a.getEdges()) {
-            stack.addFirst(edge);
-        }
+        Vertex[] vertices = new Vertex[]{a, b, c, d, e};
 
-        while (!stack.isEmpty()) {
-            Edge current = stack.poll();
-            route.add(current.getDestination());
-            totalLength += current.getLength();
-            current.setVisited(true);
+        for (int i = 0; i < vertices.length; i++) {
+//        for (int i = 2; i < 3; i++) {
 
-            if (route.size() == 5) {
-                for (Edge edge : current.getDestination().getEdges()) {
-                    if (edge.getDestination().getSymbol() == route.getFirst().getSymbol()) {
-                        System.out.println(Arrays.toString(route.toArray()) + " " + route.getFirst().getSymbol() + " " + totalLength);
-                    }
-                }
-                boolean toContinue = true;
-                while (toContinue && route.size() > 2) {
-                    Vertex last = route.pollLast();
-                    Vertex preLast = route.pollLast();
-                    route.addLast(preLast);
-                    Set<Edge> preLastsEdges = new HashSet<Edge>(preLast.getEdges());
-
-                    for (Iterator<Edge> iterator = preLastsEdges.iterator(); iterator.hasNext(); ) {
-                        Edge edge = iterator.next();
-
-                        if (edge.getDestination().getSymbol() == last.getSymbol()) {
-                            totalLength -= edge.getLength();
-                            iterator.remove();
-
-                        } else if (route.contains(edge.getDestination())) {
-                            iterator.remove();
-                        } else if (edge.isVisited()) {
-                            iterator.remove();
-                        }
-                    }
-
-                    if (!preLastsEdges.isEmpty()) {
-                        toContinue = false;
-                    }
-                }
-                continue;
+            LinkedList<Vertex> route = new LinkedList<Vertex>();
+            route.add(vertices[i]);
+            LinkedList<Edge> stack = new LinkedList<Edge>();
+            for (Edge edge : vertices[i].getEdges()) {
+                stack.addFirst(edge);
             }
 
-            for (Edge edge : current.getDestination().getEdges()) {
-                if (!route.contains(edge.getDestination())) {
-                    stack.addFirst(edge);
+            while (!stack.isEmpty()) {
+                Edge current = stack.poll();
+                route.add(current.getDestination());
+                current.setVisited(true);
+
+                if (route.size() == vertices.length) {
+                    for (Edge edge : current.getDestination().getEdges()) {
+                        if (edge.getDestination().getSymbol() == route.getFirst().getSymbol()) {
+                            System.out.println(Arrays.toString(route.toArray()) + " " + route.getFirst().getSymbol());
+                        }
+                    }
+                    boolean toContinue = true;
+                    while (toContinue && route.size() > 2) {
+                        Vertex last = route.pollLast();
+                        Vertex preLast = route.pollLast();
+                        route.addLast(preLast);
+                        Set<Edge> preLastsEdges = new HashSet<Edge>(preLast.getEdges());
+
+                        for (Iterator<Edge> iterator = preLastsEdges.iterator(); iterator.hasNext(); ) {
+                            Edge edge = iterator.next();
+
+                            if (edge.getDestination().getSymbol() == last.getSymbol()) {
+                                iterator.remove();
+
+                            } else if (route.contains(edge.getDestination())) {
+                                iterator.remove();
+
+                            } else if (edge.isVisited()) {
+                                iterator.remove();
+                            }
+                        }
+
+//                        if (route.size() == 2) {
+//                            route.pollLast();
+//                        }
+
+                        if (!preLastsEdges.isEmpty()) {
+                            toContinue = false;
+
+                        }
+                    }
+                    continue;
+                }
+
+                for (Edge edge : current.getDestination().getEdges()) {
+                    if (!route.contains(edge.getDestination())) {
+                        stack.addFirst(edge);
+                    }
                 }
             }
         }
     }
-
 
     static class Graph {
         public final static int INFINITY = Integer.MAX_VALUE;
