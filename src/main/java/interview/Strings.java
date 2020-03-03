@@ -71,8 +71,10 @@ public class Strings {
 
 //        ListNode result = addTwoNumbers(first, second);
 
-//        zigzagConversion("PAYPALISHIRING", 3);
-        zigzagConversion("PAYPALIS", 4);
+//        ArrayList<char[]> rawResult = zigzagConversion("PAYPALISHIRING", 3);
+//        System.out.println(notSoPrettyPrintZigzag(rawResult));
+//        zigzagConversion("", 4);
+        System.out.println(convert("PAYPALISHIRING", 4));
     }
 
     public static int areStringsAnagrams(String first, String second) {
@@ -237,14 +239,15 @@ public class Strings {
         }
     }
 
-    public static String zigzagConversion(String toBeConverted, int num) {
+    public static ArrayList<char[]> zigzagConversion(String toBeConverted, int numRows) {
         ArrayList<char[]> rawResult = new ArrayList<>();
         int current = 0;
-        int j = num - 2;
+        int j = numRows - 2;
 
         while (true) {
-            if (toBeConverted.length() - current <= num) {
-                char[] chars = new char[num];
+            if (toBeConverted.length() - current <= numRows) {
+                char[] chars = new char[numRows];
+                Arrays.fill(chars, ' ');
                 for (int i = 0; i <= toBeConverted.length() - current - 1; i++) {
                     chars[i] = toBeConverted.charAt(current + i);
                 }
@@ -252,12 +255,12 @@ public class Strings {
                 break;
             } else {
                 // создаём "простой", т.е. не зигзаговый м-в для num символов
-                char[] chars = new char[num];
-                for (int i = 0; i < num; i++) {
+                char[] chars = new char[numRows];
+                for (int i = 0; i < numRows; i++) {
                     chars[i] = toBeConverted.charAt(current + i);
                 }
                 rawResult.add(chars);
-                current += num;
+                current += numRows;
             }
 
             // проверяем корнеркейс, что после создания м-ва из первых num символов,
@@ -265,7 +268,7 @@ public class Strings {
             // если недостаточно, делаем столько зигзаговых массивов, сколько можем и выходим из while
             if (toBeConverted.length() - current <= j) {
                 for (int i = 0; i <= toBeConverted.length() - current - 1; i++) {
-                    char[] chars = new char[num];
+                    char[] chars = new char[numRows];
                     Arrays.fill(chars, ' ');
                     chars[j - i] = toBeConverted.charAt(current + i);
                     rawResult.add(chars);
@@ -274,7 +277,7 @@ public class Strings {
                 // просто создаём зигзаговые м-вы
             } else {
                 for (int i = 0; i < j; i++) {
-                    char[] chars = new char[num];
+                    char[] chars = new char[numRows];
                     Arrays.fill(chars, ' ');
                     chars[j - i] = toBeConverted.charAt(current + i);
                     rawResult.add(chars);
@@ -283,7 +286,63 @@ public class Strings {
             }
         }
 
-        return "";
+        return rawResult;
 
+    }
+
+    public static String notSoPrettyPrintZigzag(List<char[]> rawResult) {
+        StringBuilder result = new StringBuilder(rawResult.size() * rawResult.get(0).length);
+        int i = 0;
+        while (true) {
+            if (rawResult.get(0).length <= i) {
+                break;
+            }
+            for (int j = 0; j < rawResult.size(); j++) {
+                char ch = rawResult.get(j)[i];
+                if (ch != ' ') {
+                    result.append(ch);
+                }
+            }
+            System.out.println();
+            i++;
+        }
+        return result.toString();
+    }
+
+    public static void prettyPrintZigzag(List<char[]> rawResult) {
+        int i = 0;
+        while (true) {
+            if (rawResult.get(0).length <= i) {
+                break;
+            }
+            for (int j = 0; j < rawResult.size(); j++) {
+                System.out.print(rawResult.get(j)[i]);
+            }
+            System.out.println();
+            i++;
+        }
+    }
+
+    // типа, правильный ответ
+    public static String convert(String s, int numRows) {
+
+        if (numRows == 1) return s;
+
+        List<StringBuilder> rows = new ArrayList<>();
+        for (int i = 0; i < Math.min(numRows, s.length()); i++)
+            rows.add(new StringBuilder());
+
+        int curRow = 0;
+        boolean goingDown = false;
+
+        for (char c : s.toCharArray()) {
+            rows.get(curRow).append(c);
+            if (curRow == 0 || curRow == numRows - 1) goingDown = !goingDown;
+            curRow += goingDown ? 1 : -1;
+        }
+
+        StringBuilder ret = new StringBuilder();
+        for (StringBuilder row : rows) ret.append(row);
+        return ret.toString();
     }
 }
