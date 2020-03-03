@@ -9,13 +9,13 @@ import java.util.List;
 public class Exercises {
     public static void main(String[] args) {
         Exercises exercises = new Exercises();
-        int[] items = new int[]{11, 8, 7, 6, 5};
+        int[] items = new int[]{11, 8, 7, 5, 6};
 //        int[]items = new int[]{1,3,5};
         int capacity = 13;
-//        exercises.knapsack_64(items, 0, 0, capacity, new int[items.length], 0);
+        exercises.knapsack_64(items, 0, 0, capacity, new int[items.length], 0);
 //        exercises.knapsack_64_2(items, 0, capacity, new int[items.length]);
 
-        exercises.showTeams(new LinkedList<Character>(Arrays.asList('A','B','C','D')), 2, new LinkedList<Character>(), new ArrayList<List<Character>>());
+//        exercises.showTeams(new LinkedList<Character>(Arrays.asList('A','B','C','D')), 2, new LinkedList<Character>(), new ArrayList<List<Character>>());
     }
 
     private long recursiveMultiplication_61(int x, int y) {

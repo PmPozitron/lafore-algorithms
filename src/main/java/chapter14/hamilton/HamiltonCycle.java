@@ -2,16 +2,23 @@ package chapter14.hamilton;
 
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 public class HamiltonCycle {
 
     public static void main(String[] args) {
         new HamiltonCycle().findCycles();
+
+        String[] array = { "hawk", "robin" };     // [hawk, robin]
+        List<String> list = Arrays.asList(array); // returns fixed size list
+
+        new Date();
     }
 
     public void findCycles() {
@@ -20,29 +27,34 @@ public class HamiltonCycle {
         Vertex c = new Vertex('C', new LinkedHashSet<Edge>());
         Vertex d = new Vertex('D', new LinkedHashSet<Edge>());
         Vertex e = new Vertex('E', new LinkedHashSet<Edge>());
+        Vertex g = new Vertex('G', new LinkedHashSet<Edge>());
+        Vertex h = new Vertex('H', new LinkedHashSet<Edge>());
+        Vertex k = new Vertex('K', new LinkedHashSet<Edge>());
 
-        a.getEdges().add(new Edge(b, 5));
-        a.getEdges().add(new Edge(c, 5));
-        a.getEdges().add(new Edge(e, 5));
+        a.getEdges().add(new Edge(c, 1));
+        a.getEdges().add(new Edge(b, 1));
 
-        b.getEdges().add(new Edge(a, 5));
-//        b.getEdges().add(new Edge(c, 7));
-        b.getEdges().add(new Edge(d, 8));
+        b.getEdges().add(new Edge(c, 1));
+        b.getEdges().add(new Edge(g, 1));
 
-//        c.getEdges().add(new Edge(b, 7));
-//        c.getEdges().add(new Edge(d, 3));
-        c.getEdges().add(new Edge(e, 2));
-//        c.getEdges().add(new Edge(a, 9));
+        c.getEdges().add(new Edge(b, 1));
+        c.getEdges().add(new Edge(e, 1));
 
-//        d.getEdges().add(new Edge(b, 8));
-        d.getEdges().add(new Edge(c, 3));
-//        d.getEdges().add(new Edge(e, 10));
+        d.getEdges().add(new Edge(e, 1));
+        d.getEdges().add(new Edge(h, 1));
 
-        e.getEdges().add(new Edge(d, 10));
-        e.getEdges().add(new Edge(c, 2));
-        e.getEdges().add(new Edge(a, 2));
+        e.getEdges().add(new Edge(a, 1));
+        e.getEdges().add(new Edge(b, 1));
 
-        Vertex[] vertices = new Vertex[]{a, b, c, d, e};
+        g.getEdges().add(new Edge(h, 1));
+
+        h.getEdges().add(new Edge(d, 1));
+        h.getEdges().add(new Edge(k, 1));
+
+        k.getEdges().add(new Edge(d, 1));
+//        k.getEdges().add(new Edge(h, 1));
+
+        Vertex[] vertices = new Vertex[]{a, b, c, d, e, g, h, k};
 
         for (int i = 0; i < vertices.length; i++) {
 //        for (int i = 2; i < 3; i++) {
@@ -93,6 +105,9 @@ public class HamiltonCycle {
 
                             } else if (edge.isVisited()) {
                                 iterator.remove();
+                                for (Edge toResetVisited : edge.getDestination().getEdges()) {
+                                    toResetVisited.setVisited(false);
+                                }
                             }
                         }
 
@@ -127,7 +142,6 @@ public class HamiltonCycle {
                             }
                         }
                     }
-
 
                 }
             }
