@@ -5,15 +5,17 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Exercises {
     public static void main(String[] args) {
         Exercises exercises = new Exercises();
-        int[] items = new int[]{11, 8, 7, 5, 6};
+        int[] items = new int[]{11, 8, 7, 5, 6, 2};
 //        int[]items = new int[]{1,3,5};
-        int capacity = 13;
-        exercises.knapsack_64(items, 0, 0, capacity, new int[items.length], 0);
+        int capacity = 15;
+//        exercises.knapsack_64(items, 0, 0, capacity, new int[items.length], 0);
 //        exercises.knapsack_64_2(items, 0, capacity, new int[items.length]);
+        exercises.knapsackIterative(items, capacity);
 
 //        exercises.showTeams(new LinkedList<Character>(Arrays.asList('A','B','C','D')), 2, new LinkedList<Character>(), new ArrayList<List<Character>>());
     }
@@ -133,7 +135,7 @@ public class Exercises {
         for (int i = index; i < items.length; i++) {
             placed[i] = items[i];
             if (items[i] == capacity) {
-                System.out.println(items[i]);
+                System.out.printf("placed %s, capacity %d\n", Arrays.toString(placed), capacity);
 
             } else if (items[i] < capacity) {
                 knapsack_64_2(items, i + 1, capacity - items[i], placed);
@@ -155,12 +157,53 @@ public class Exercises {
             }
         } else {
 //            for (int i = 0; i < players.size(); i++) {
-            for (Iterator<Character> iterator = players.iterator(); iterator.hasNext();) {
+            for (Iterator<Character> iterator = players.iterator(); iterator.hasNext(); ) {
                 LinkedList<Character> localPlaced = new LinkedList<Character>(placed);
                 localPlaced.add(iterator.next());
                 iterator.remove();
                 LinkedList<Character> localPlayers = new LinkedList<Character>(players);
                 showTeams(localPlayers, k - 1, localPlaced, result);
+            }
+        }
+    }
+
+    private void knapsackIterative(int[] items, int neededCapacity) {
+        ArrayList<LinkedList<Integer>> result = new ArrayList<>();
+        LinkedList<Integer> knapsack = null;
+        for (int i = 0; i < items.length; i++) {
+            knapsack = new LinkedList<>();
+            knapsack.addFirst(items[i]);
+            int currentCapacity = items[i];
+
+            if (currentCapacity > neededCapacity) {
+                currentCapacity -= knapsack.removeFirst();
+                continue;
+
+            } else if (currentCapacity == neededCapacity) {
+                System.out.println(knapsack.stream().map(item -> String.valueOf(item)).collect(Collectors.joining("+")));
+                result.add(new LinkedList<>(knapsack));
+                currentCapacity -= knapsack.removeFirst();
+
+            } else {
+                for (int j = i + 1; j < items.length; j++) {
+                    for (int k = j + 1; k < items.length; k++) {
+                        knapsack.addFirst(items[k]);
+                        currentCapacity += items[k];
+
+                        if (currentCapacity > neededCapacity) {
+                            currentCapacity -= knapsack.removeFirst();
+
+                        } else if (currentCapacity == neededCapacity) {
+                            System.out.println(knapsack.stream().map(item -> String.valueOf(item)).collect(Collectors.joining("+")));
+                            result.add(new LinkedList<>(knapsack));
+                            currentCapacity -= knapsack.removeFirst();
+//                        return;
+
+                        } else {
+                            System.out.println(knapsack.stream().map(item -> String.valueOf(item)).collect(Collectors.joining("-")));
+                        }
+                    }
+                }
             }
         }
     }
