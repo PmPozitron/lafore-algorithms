@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 public class Exercises {
     public static void main(String[] args) {
         Exercises exercises = new Exercises();
-        int[] items = new int[]{11, 8, 7, 5, 6, 2};
-//        int[]items = new int[]{1,3,5};
-        int capacity = 15;
+//        int[] items = new int[]{11, 8, 7, 5, 6, 2};
+        int[]items = new int[]{1,7,4,5,2};
+        int capacity = 10;
 //        exercises.knapsack_64(items, 0, 0, capacity, new int[items.length], 0);
 //        exercises.knapsack_64_2(items, 0, capacity, new int[items.length]);
         exercises.knapsackIterative(items, capacity);
@@ -173,37 +173,56 @@ public class Exercises {
         for (int i = 0; i < items.length; i++) {
             knapsack = new LinkedList<>();
             knapsack.addFirst(items[i]);
-            int currentCapacity = items[i];
+            int currentCapacity = knapsack.peek();
 
             if (currentCapacity > neededCapacity) {
-                currentCapacity -= knapsack.removeFirst();
                 continue;
 
             } else if (currentCapacity == neededCapacity) {
                 System.out.println(knapsack.stream().map(item -> String.valueOf(item)).collect(Collectors.joining("+")));
                 result.add(new LinkedList<>(knapsack));
-                currentCapacity -= knapsack.removeFirst();
+                continue;
 
             } else {
                 for (int j = i + 1; j < items.length; j++) {
-                    for (int k = j + 1; k < items.length; k++) {
-                        knapsack.addFirst(items[k]);
-                        currentCapacity += items[k];
+                    knapsack.addFirst(items[j]);
+                    currentCapacity += knapsack.peek();
 
-                        if (currentCapacity > neededCapacity) {
-                            currentCapacity -= knapsack.removeFirst();
+                    if (currentCapacity > neededCapacity) {
+                        currentCapacity -= knapsack.pop();
+                        continue;
 
-                        } else if (currentCapacity == neededCapacity) {
-                            System.out.println(knapsack.stream().map(item -> String.valueOf(item)).collect(Collectors.joining("+")));
-                            result.add(new LinkedList<>(knapsack));
-                            currentCapacity -= knapsack.removeFirst();
-//                        return;
+                    } else if (currentCapacity == neededCapacity) {
+                        System.out.println(knapsack.stream().map(item -> String.valueOf(item)).collect(Collectors.joining("+")));
+                        result.add(new LinkedList<>(knapsack));
+                        currentCapacity -= knapsack.pop();
+                        continue;
 
-                        } else {
-                            System.out.println(knapsack.stream().map(item -> String.valueOf(item)).collect(Collectors.joining("-")));
+                    } else {
+                        for (int k = j + 1; k < items.length; k++) {
+                            knapsack.addFirst(items[k]);
+                            currentCapacity += items[k];
+
+                            if (currentCapacity > neededCapacity) {
+                                currentCapacity -= knapsack.removeFirst();
+
+                            } else if (currentCapacity == neededCapacity) {
+                                System.out.println(knapsack.stream().map(item -> String.valueOf(item)).collect(Collectors.joining("+")));
+                                result.add(new LinkedList<>(knapsack));
+                                currentCapacity -= knapsack.removeFirst();
+                                continue;
+
+                            } else {
+                                continue;
+                            }
                         }
+                        while (knapsack.size() >= 2)
+                            currentCapacity -= knapsack.pop();
                     }
                 }
+            }
+            while (knapsack.size() >= 1) {
+                currentCapacity -= knapsack.pop();
             }
         }
     }
