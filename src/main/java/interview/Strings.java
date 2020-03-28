@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Strings {
 
@@ -72,9 +73,12 @@ public class Strings {
 //        ListNode result = addTwoNumbers(first, second);
 
 //        ArrayList<char[]> rawResult = zigzagConversion("PAYPALISHIRING", 3);
+//        prettyPrintZigzag(rawResult);
 //        System.out.println(notSoPrettyPrintZigzag(rawResult));
 //        zigzagConversion("", 4);
-        System.out.println(convert("PAYPALISHIRING", 4));
+//        System.out.println(convert("PAYPALISHIRING", 4));
+
+        brackets(3);
     }
 
     public static int areStringsAnagrams(String first, String second) {
@@ -243,11 +247,13 @@ public class Strings {
         ArrayList<char[]> rawResult = new ArrayList<>();
         int current = 0;
         int j = numRows - 2;
+        int size = 0;
 
         while (true) {
             if (toBeConverted.length() - current <= numRows) {
-                char[] chars = new char[numRows];
-                Arrays.fill(chars, ' ');
+                char[] chars = new char[toBeConverted.length() - current];
+//                char[] chars = new char[numRows];
+//                Arrays.fill(chars, ' ');
                 for (int i = 0; i <= toBeConverted.length() - current - 1; i++) {
                     chars[i] = toBeConverted.charAt(current + i);
                 }
@@ -268,8 +274,9 @@ public class Strings {
             // если недостаточно, делаем столько зигзаговых массивов, сколько можем и выходим из while
             if (toBeConverted.length() - current <= j) {
                 for (int i = 0; i <= toBeConverted.length() - current - 1; i++) {
-                    char[] chars = new char[numRows];
-                    Arrays.fill(chars, ' ');
+                    char[] chars = new char[toBeConverted.length() - current];
+//                    char[] chars = new char[numRows];
+//                    Arrays.fill(chars, ' ');
                     chars[j - i] = toBeConverted.charAt(current + i);
                     rawResult.add(chars);
                 }
@@ -278,7 +285,7 @@ public class Strings {
             } else {
                 for (int i = 0; i < j; i++) {
                     char[] chars = new char[numRows];
-                    Arrays.fill(chars, ' ');
+//                    Arrays.fill(chars, ' ');
                     chars[j - i] = toBeConverted.charAt(current + i);
                     rawResult.add(chars);
                 }
@@ -298,8 +305,11 @@ public class Strings {
                 break;
             }
             for (int j = 0; j < rawResult.size(); j++) {
+                if (rawResult.get(j).length <= i) {
+                    continue;
+                }
                 char ch = rawResult.get(j)[i];
-                if (ch != ' ') {
+                if (ch != ' ' && ch != 0) {
                     result.append(ch);
                 }
             }
@@ -316,6 +326,9 @@ public class Strings {
                 break;
             }
             for (int j = 0; j < rawResult.size(); j++) {
+                if (rawResult.get(j).length <= i) {
+                    continue;
+                }
                 System.out.print(rawResult.get(j)[i]);
             }
             System.out.println();
@@ -344,5 +357,52 @@ public class Strings {
         StringBuilder ret = new StringBuilder();
         for (StringBuilder row : rows) ret.append(row);
         return ret.toString();
+    }
+
+    public static void brackets(int size) {
+        char[] brackets = new char[size*2];
+        Arrays.fill(brackets, 0, size, '(');
+        Arrays.fill(brackets, size, size*2, ')');
+
+        Set<String> result = new HashSet<>();
+        createSequences(brackets, brackets.length, result);
+        for (String seq : result) {
+            System.out.println(seq);
+        }
+    }
+
+    public static void createSequences(char[] chars, int newSize, Set<String> result) {
+        if (newSize == 1) return;
+
+        for (int i = 0; i<newSize; i++) {
+            createSequences(chars, newSize-1, result);
+            if (newSize == 2) {
+                if (checkCorrectness(chars)) result.add(new String(chars));
+            }
+            rotate(newSize, chars);
+        }
+
+    }
+
+    public static void rotate (int start, char[] chars) {
+        start = chars.length - start;
+        char temp = chars[start];
+        for (int i = start; i < chars.length-1; i++) {
+            chars[i] = chars[i+1];
+        }
+        chars[chars.length-1] = temp;
+//        System.out.println(new String(chars));
+    }
+
+    public static boolean checkCorrectness(char[] chars) {
+        int counter = 0;
+        for (int i = 0; i< chars.length; i++) {
+            if (chars[i] == '(') counter++;
+            else counter--;
+
+            if (counter<0) return false;
+        }
+
+        return counter == 0;
     }
 }

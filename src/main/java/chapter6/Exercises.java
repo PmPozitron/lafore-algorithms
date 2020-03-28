@@ -10,14 +10,15 @@ import java.util.stream.Collectors;
 public class Exercises {
     public static void main(String[] args) {
         Exercises exercises = new Exercises();
-//        int[] items = new int[]{11, 8, 7, 5, 6, 2};
-        int[]items = new int[]{1,7,4,5,2};
-        int capacity = 10;
+//        int[] items = new int[]{11, 8, 7, 5, 6, 2}; -- 15
+//        int[]items = new int[]{1,7,4,5,2}; -- 10
+//        int[]items = new int[]{1,7,4,5,2,3,9,11,6};
+//        int capacity = 18;
 //        exercises.knapsack_64(items, 0, 0, capacity, new int[items.length], 0);
 //        exercises.knapsack_64_2(items, 0, capacity, new int[items.length]);
-        exercises.knapsackIterative(items, capacity);
+//        exercises.knapsackIterative(items, capacity);
 
-//        exercises.showTeams(new LinkedList<Character>(Arrays.asList('A','B','C','D')), 2, new LinkedList<Character>(), new ArrayList<List<Character>>());
+        exercises.showTeams(new LinkedList<Character>(Arrays.asList('A','B','C','D')), 2, new LinkedList<Character>(), new ArrayList<List<Character>>());
     }
 
     private long recursiveMultiplication_61(int x, int y) {
@@ -172,7 +173,7 @@ public class Exercises {
         LinkedList<Integer> knapsack = null;
         for (int i = 0; i < items.length; i++) {
             knapsack = new LinkedList<>();
-            knapsack.addFirst(items[i]);
+            knapsack.push(items[i]);
             int currentCapacity = knapsack.peek();
 
             if (currentCapacity > neededCapacity) {
@@ -185,7 +186,7 @@ public class Exercises {
 
             } else {
                 for (int j = i + 1; j < items.length; j++) {
-                    knapsack.addFirst(items[j]);
+                    knapsack.push(items[j]);
                     currentCapacity += knapsack.peek();
 
                     if (currentCapacity > neededCapacity) {
@@ -200,16 +201,16 @@ public class Exercises {
 
                     } else {
                         for (int k = j + 1; k < items.length; k++) {
-                            knapsack.addFirst(items[k]);
+                            knapsack.push(items[k]);
                             currentCapacity += items[k];
 
                             if (currentCapacity > neededCapacity) {
-                                currentCapacity -= knapsack.removeFirst();
+                                currentCapacity -= knapsack.pop();
 
                             } else if (currentCapacity == neededCapacity) {
                                 System.out.println(knapsack.stream().map(item -> String.valueOf(item)).collect(Collectors.joining("+")));
                                 result.add(new LinkedList<>(knapsack));
-                                currentCapacity -= knapsack.removeFirst();
+                                currentCapacity -= knapsack.pop();
                                 continue;
 
                             } else {
